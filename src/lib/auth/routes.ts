@@ -10,6 +10,12 @@ export const ROUTES = {
   forgotPassword: "/recuperar-senha",
   newPassword: "/nova-senha",
   dashboard: "/painel",
+  courses: "/cursos",
+  manuals: "/manuais",
+  quizzes: "/testes",
+  progress: "/progresso",
+  subscription: "/assinatura",
+  profile: "/perfil",
   admin: "/admin",
 } as const;
 

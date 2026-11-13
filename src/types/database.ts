@@ -496,6 +496,11 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"student_subject_progress":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "completed_lessons": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
+            }[]
+                           },
 "submit_quiz_attempt":
 { Args: { "p_answers": Json,"p_attempt_id": string }; Returns: {
               "answers": NonNullable<Json>,

@@ -32,6 +32,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0200_auth_and_access_functions.sql` | Perfil automático no registo, `is_admin()`, `has_course_access()` |
 | `…0300_rls_policies.sql` | Políticas RLS e privilégios por coluna |
 | `…0400_secure_functions.sql` | Testes (iniciar/submeter/corrigir), URL protegido dos PDFs |
+| `…0500_dashboard_functions.sql` | Progresso por disciplina para o dashboard |
 
 ### Ambiente local (requer Docker)
 

@@ -29,6 +29,10 @@
 
   --ring: #14b8a6;
   --radius: 0.875rem;
+
+  /* Gráficos (validados com o validador de paleta: luminosidade e contraste) */
+  --chart-1: #0d9488;
+  --chart-track: #d5f5ef;
 }
 
 .dark {
@@ -52,6 +56,9 @@
   --danger: #f87171;
 
   --ring: #2dd4bf;
+
+  --chart-1: #0fa596;
+  --chart-track: #133a36;
 }
 
 @theme inline {
@@ -72,10 +79,17 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-track: var(--chart-track);
 
   --radius-card: var(--radius);
 
   --font-sans: var(--font-inter);
+}
+
+/* Espaço para a barra de navegação inferior em iPhones com "notch" */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 body {
