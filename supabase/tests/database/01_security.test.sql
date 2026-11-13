@@ -22,6 +22,10 @@ insert into auth.users (id, email, raw_user_meta_data, aud, role) values
 -- O primeiro admin é promovido directamente na BD (como será feito no SQL Editor).
 update public.profiles set role = 'admin' where id = 'aaaaaaaa-0000-0000-0000-000000000009';
 
+-- Total real de perfis (a BD local pode ter outras contas criadas durante o desenvolvimento).
+create temp table _totals as select count(*)::int as profiles from public.profiles;
+grant select on _totals to authenticated;
+
 -- =============================================================================
 -- 1. Perfis
 -- =============================================================================
@@ -141,7 +145,7 @@ select throws_ok(
 -- ---- Sessão: admin -----------------------------------------------------------
 set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-0000-0000-000000000009","role":"authenticated"}';
 
-select is((select count(*)::int from public.profiles), 3, 'Admin vê todos os perfis');
+select is((select count(*)::int from public.profiles), (select profiles from _totals), 'Admin vê todos os perfis');
 select is((select count(*)::int from public.lessons), 3, 'Admin vê todas as aulas, incluindo rascunhos');
 select is((select count(*)::int from public.questions), 3, 'Admin gere as perguntas');
 select is(
