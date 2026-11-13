@@ -22,12 +22,12 @@ select is(
   'Conta as 2 aulas publicadas, incluindo a bloqueada (sem assinatura)'
 );
 select is(
-  (select count(*)::int from public.student_subject_progress()),
+  (select count(*)::int from public.student_subject_progress() where course_id = '10000000-0000-0000-0000-000000000001'),
   1,
   'Não inclui disciplinas em rascunho'
 );
 select is(
-  (select completed_lessons from public.student_subject_progress()),
+  (select completed_lessons from public.student_subject_progress() where subject_id = '20000000-0000-0000-0000-000000000001'),
   0,
   'Começa com 0 aulas concluídas'
 );
@@ -36,7 +36,7 @@ insert into public.student_progress (user_id, lesson_id, status, completed_at)
 values ('cccccccc-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 'completed', now());
 
 select is(
-  (select completed_lessons from public.student_subject_progress()),
+  (select completed_lessons from public.student_subject_progress() where subject_id = '20000000-0000-0000-0000-000000000001'),
   1,
   'Conta a aula concluída pelo próprio estudante'
 );
@@ -44,7 +44,7 @@ select is(
 -- ---- Aluno 2 -----------------------------------------------------------------
 set local request.jwt.claims = '{"sub":"cccccccc-0000-0000-0000-000000000002","role":"authenticated"}';
 select is(
-  (select completed_lessons from public.student_subject_progress()),
+  (select completed_lessons from public.student_subject_progress() where subject_id = '20000000-0000-0000-0000-000000000001'),
   0,
   'Não conta o progresso de outros estudantes'
 );

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 function isActive(pathname: string | null, item: NavItem) {
   if (pathname === null) return false;
   if (item.exact) return pathname === item.href;
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  return [item.href, ...(item.also ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 /*

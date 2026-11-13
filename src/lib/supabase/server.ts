@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { publicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
@@ -12,6 +13,10 @@ import type { Database } from "@/types/database";
  * Criar um cliente novo em cada pedido (nunca guardar numa variável global).
  */
 export async function createClient() {
+  // connection(): estas consultas dependem do pedido (sessão) → nunca pré-gerar.
+  // Sem isto, o Next.js tenta pré-gerar a página para a navegação instantânea e o
+  // cliente Supabase usa Date.now() ao ler a sessão, o que gera erros no servidor.
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import { Alert } from "@/components/ui/alert";
 import { FormField } from "@/components/ui/form-field";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -25,6 +25,7 @@ const selectClasses = cn(
 
 export function ProfileForm({ initial }: { initial: ProfileValues }) {
   const [state, formAction] = useActionState(updateProfile, initialFormState);
+  const uid = useId(); // ids únicos (o Next.js pode manter páginas anteriores escondidas no DOM)
   const v = { ...initial, ...state.values };
   const errors = state.fieldErrors ?? {};
 
@@ -56,11 +57,11 @@ export function ProfileForm({ initial }: { initial: ProfileValues }) {
         />
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="province" className="text-sm font-medium">
+          <label htmlFor={`${uid}-province`} className="text-sm font-medium">
             Província (opcional)
           </label>
           <select
-            id="province"
+            id={`${uid}-province`}
             name="province"
             defaultValue={v.province}
             aria-invalid={errors.province ? true : undefined}
@@ -85,11 +86,11 @@ export function ProfileForm({ initial }: { initial: ProfileValues }) {
         />
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="academicYear" className="text-sm font-medium">
+          <label htmlFor={`${uid}-academicYear`} className="text-sm font-medium">
             Ano do curso (opcional)
           </label>
           <select
-            id="academicYear"
+            id={`${uid}-academicYear`}
             name="academicYear"
             defaultValue={v.academicYear}
             aria-invalid={errors.academicYear ? true : undefined}

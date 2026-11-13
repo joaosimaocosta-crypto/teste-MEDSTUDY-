@@ -24,6 +24,7 @@ export const PROTECTED_PREFIXES = [
   "/painel",
   "/perfil",
   "/cursos",
+  "/aulas",
   "/manuais",
   "/testes",
   "/progresso",

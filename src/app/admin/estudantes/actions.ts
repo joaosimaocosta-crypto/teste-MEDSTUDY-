@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { FormState } from "@/lib/validations/auth";
 
 const roleSchema = z.object({
-  userId: z.uuid({ message: "Utilizador inválido." }),
+  userId: z.guid({ message: "Utilizador inválido." }),
   role: z.enum(["student", "admin"], { message: "Papel inválido." }),
 });
 

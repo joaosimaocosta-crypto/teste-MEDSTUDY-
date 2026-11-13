@@ -2,7 +2,8 @@
 -- MEDSTUDY MOZ — Testes de segurança da base de dados (pgTAP)
 -- Executar com:  npm run db:test
 -- Tudo corre dentro de uma transacção e é revertido no fim.
--- Depende dos dados de exemplo de supabase/seed.sql.
+-- Depende dos dados de exemplo de supabase/seed.sql (as contagens limitam-se ao curso
+-- do seed, para não dependerem de outros conteúdos criados durante o desenvolvimento).
 -- =============================================================================
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -68,10 +69,10 @@ select throws_ok(
 -- =============================================================================
 -- 2. Conteúdos sem assinatura
 -- =============================================================================
-select is((select count(*)::int from public.courses), 1, 'Vê o curso publicado');
-select is((select count(*)::int from public.subjects), 1, 'Não vê disciplinas em rascunho');
+select is((select count(*)::int from public.courses where id = '10000000-0000-0000-0000-000000000001'), 1, 'Vê o curso publicado');
+select is((select count(*)::int from public.subjects where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Não vê disciplinas em rascunho');
 select is(
-  (select array_agg(slug order by position) from public.lessons),
+  (select array_agg(slug order by position) from public.lessons where course_id = '10000000-0000-0000-0000-000000000001'),
   array['introducao-ao-coracao'],
   'Sem assinatura só vê o conteúdo da aula gratuita'
 );
@@ -83,8 +84,8 @@ select is(
   (select count(*)::int from public.lesson_outline('40000000-0000-0000-0000-000000000001') where is_locked),
   1, 'Índice marca 1 aula como bloqueada'
 );
-select is((select count(*)::int from public.resources), 0, 'Sem assinatura não vê recursos de aulas pagas');
-select is((select count(*)::int from public.manuals), 1, 'Vê a lista de manuais publicados');
+select is((select count(*)::int from public.resources where lesson_id in ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000002','50000000-0000-0000-0000-000000000003')), 0, 'Sem assinatura não vê recursos de aulas pagas');
+select is((select count(*)::int from public.manuals where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Vê a lista de manuais publicados');
 select throws_ok(
   $$ select pdf_url from public.manuals $$,
   '42501', null, 'Não consegue ler pdf_url directamente'
@@ -93,7 +94,7 @@ select throws_ok(
   $$ select public.get_manual_pdf_url('60000000-0000-0000-0000-000000000001') $$,
   '42501', null, 'Sem assinatura não obtém o endereço do PDF'
 );
-select is((select count(*)::int from public.quizzes), 1, 'Vê o teste publicado');
+select is((select count(*)::int from public.quizzes where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Vê o teste publicado');
 select is((select count(*)::int from public.questions), 0, 'Nunca lê a tabela de perguntas (respostas correctas)');
 select throws_ok(
   $$ select public.start_quiz_attempt('70000000-0000-0000-0000-000000000001') $$,
@@ -146,7 +147,7 @@ select throws_ok(
 set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-0000-0000-000000000009","role":"authenticated"}';
 
 select is((select count(*)::int from public.profiles), (select profiles from _totals), 'Admin vê todos os perfis');
-select is((select count(*)::int from public.lessons), 3, 'Admin vê todas as aulas, incluindo rascunhos');
+select is((select count(*)::int from public.lessons where course_id = '10000000-0000-0000-0000-000000000001'), 3, 'Admin vê todas as aulas, incluindo rascunhos');
 select is((select count(*)::int from public.questions), 3, 'Admin gere as perguntas');
 select is(
   public.get_manual_pdf_url('60000000-0000-0000-0000-000000000001'),
@@ -172,8 +173,8 @@ select lives_ok(
 -- =============================================================================
 set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-0000-0000-000000000001","role":"authenticated"}';
 
-select is((select count(*)::int from public.lessons), 2, 'Com assinatura vê as 2 aulas publicadas (não os rascunhos)');
-select is((select count(*)::int from public.resources), 1, 'Com assinatura vê os recursos');
+select is((select count(*)::int from public.lessons where course_id = '10000000-0000-0000-0000-000000000001'), 2, 'Com assinatura vê as 2 aulas publicadas (não os rascunhos)');
+select is((select count(*)::int from public.resources where lesson_id in ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000002','50000000-0000-0000-0000-000000000003')), 1, 'Com assinatura vê os recursos');
 select is(
   public.get_manual_pdf_url('60000000-0000-0000-0000-000000000001'),
   'https://exemplo.invalid/manuais/anatomia.pdf', 'Com assinatura obtém o endereço do PDF'
@@ -232,7 +233,7 @@ update public.subscriptions set starts_at = now() - interval '31 days', expires_
 
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-0000-0000-000000000001","role":"authenticated"}';
-select is((select count(*)::int from public.lessons), 1, 'Assinatura expirada perde o acesso às aulas pagas');
+select is((select count(*)::int from public.lessons where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Assinatura expirada perde o acesso às aulas pagas');
 
 -- =============================================================================
 -- 6. Visitante anónimo
@@ -241,7 +242,7 @@ reset role;
 set local role anon;
 set local request.jwt.claims = '{"role":"anon"}';
 
-select is((select count(*)::int from public.courses), 1, 'Visitante vê o catálogo de cursos');
+select is((select count(*)::int from public.courses where id = '10000000-0000-0000-0000-000000000001'), 1, 'Visitante vê o catálogo de cursos');
 select throws_ok(
   $$ select count(*) from public.lessons $$,
   '42501', null, 'Visitante não acede às aulas'

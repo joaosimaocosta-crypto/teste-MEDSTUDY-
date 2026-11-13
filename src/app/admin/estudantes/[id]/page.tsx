@@ -50,7 +50,7 @@ export default function StudentDetailPage({ params }: PageProps<"/admin/estudant
 async function StudentDetail({ params }: { params: PageProps<"/admin/estudantes/[id]">["params"] }) {
   const { id } = await params;
   // Validar o parâmetro do URL antes de o enviar para a base de dados.
-  if (!z.uuid().safeParse(id).success) notFound();
+  if (!z.guid().safeParse(id).success) notFound();
 
   const [detail, me] = await Promise.all([getStudentDetail(id), getCurrentUser()]);
   if (!detail) notFound();

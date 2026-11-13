@@ -189,7 +189,7 @@ function ContinueCard({ lesson }: { lesson: DashboardData["continueLesson"] }) {
               <p className="text-sm text-muted-foreground">Visto em {shortDate(lesson.lastViewedAt)}</p>
             </div>
           </div>
-          <Link href={ROUTES.courses} className={buttonClasses({ fullWidth: true })}>
+          <Link href={`/aulas/${lesson.id}`} className={buttonClasses({ fullWidth: true })}>
             Continuar
           </Link>
         </div>

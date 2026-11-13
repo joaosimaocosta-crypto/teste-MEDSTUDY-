@@ -435,6 +435,11 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"_subject_lessons_ordered":
+{ Args: { "p_subject_id": string }; Returns: {
+              "chapter_id": string,"chapter_position": number,"chapter_title": string,"course_id": string,"duration_minutes": number,"is_free_preview": boolean,"lesson_id": string,"lesson_position": number,"lesson_summary": string,"lesson_title": string,"module_id": string,"module_position": number,"module_title": string,"seq": number
+            }[]
+                           },
 "can_access_lesson":
 { Args: { "p_lesson_id": string }; Returns: boolean
                            },
@@ -449,6 +454,11 @@ isOneToOne: false
 "get_attempt_review":
 { Args: { "p_attempt_id": string }; Returns: {
               "correct_option": string,"explanation": string,"is_correct": boolean,"option_a": string,"option_b": string,"option_c": string,"option_d": string,"points": number,"question_id": string,"selected_option": string,"statement": string
+            }[]
+                           },
+"get_lesson_context":
+{ Args: { "p_lesson_id": string }; Returns: {
+              "chapter_title": string,"course_id": string,"course_slug": string,"course_title": string,"duration_minutes": number,"is_completed": boolean,"is_free_preview": boolean,"is_locked": boolean,"lesson_id": string,"lesson_summary": string,"lesson_title": string,"module_title": string,"next_lesson_id": string,"position_in_subject": number,"prev_lesson_id": string,"subject_id": string,"subject_slug": string,"subject_title": string,"total_in_subject": number
             }[]
                            },
 "get_manual_pdf_url":
@@ -470,6 +480,9 @@ isOneToOne: false
 { Args: { "p_chapter_id": string }; Returns: {
               "duration_minutes": number,"id": string,"is_free_preview": boolean,"is_locked": boolean,"position": number,"slug": string,"summary": string,"title": string
             }[]
+                           },
+"set_lesson_completed":
+{ Args: { "p_completed": boolean,"p_lesson_id": string }; Returns: undefined
                            },
 "set_user_role":
 { Args: { "p_role": Database["public"]['Enums']["user_role"],"p_user_id": string }; Returns: undefined
@@ -501,6 +514,11 @@ isOneToOne: false
               "completed_lessons": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
             }[]
                            },
+"subject_outline":
+{ Args: { "p_subject_id": string }; Returns: {
+              "chapter_id": string,"chapter_title": string,"duration_minutes": number,"is_completed": boolean,"is_free_preview": boolean,"is_locked": boolean,"lesson_id": string,"lesson_summary": string,"lesson_title": string,"module_id": string,"module_title": string
+            }[]
+                           },
 "submit_quiz_attempt":
 { Args: { "p_answers": Json,"p_attempt_id": string }; Returns: {
               "answers": NonNullable<Json>,
@@ -522,7 +540,10 @@ isOneToOne: false
         to: "quiz_attempts"
         isOneToOne: true
         isSetofReturn: false
-      } }
+      } },
+"touch_lesson":
+{ Args: { "p_lesson_id": string }; Returns: undefined
+                           }
           }
           Enums: {
             "payment_method": "mpesa"|"emola"|"mkesh"|"bank_transfer"|"cash"|"other","payment_status": "pending"|"confirmed"|"rejected","progress_status": "not_started"|"in_progress"|"completed","publication_status": "draft"|"published"|"archived","quiz_attempt_status": "in_progress"|"submitted"|"expired","resource_type": "pdf"|"video"|"link"|"document"|"image"|"other","subscription_status": "pending"|"active"|"expired"|"suspended","user_role": "student"|"admin"

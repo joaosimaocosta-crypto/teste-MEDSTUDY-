@@ -30,10 +30,10 @@ insert into public.chapters (id, module_id, title, slug, status, position) value
 insert into public.lessons (id, chapter_id, title, slug, summary, content, duration_minutes, is_free_preview, status, position) values
   ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001',
    'Introdução ao coração', 'introducao-ao-coracao', 'Visão geral do órgão.',
-   '# Introdução ao coração\n\nConteúdo de exemplo (aula gratuita).', 15, true, 'published', 1),
+   E'# Introdução ao coração\n\nO **coração** é um órgão muscular que bombeia o sangue através do sistema circulatório.\n\n## Localização\n\n- No mediastino, entre os pulmões\n- Cerca de dois terços à esquerda da linha média\n\n> Conteúdo de exemplo (aula gratuita).\n\n| Câmara | Função |\n|---|---|\n| Aurícula direita | Recebe sangue venoso |\n| Ventrículo esquerdo | Bombeia sangue para a aorta |', 15, true, 'published', 1),
   ('50000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001',
    'Ciclo cardíaco', 'ciclo-cardiaco', 'Sístole e diástole.',
-   '# Ciclo cardíaco\n\nConteúdo de exemplo (exige assinatura).', 25, false, 'published', 2),
+   E'# Ciclo cardíaco\n\nO ciclo cardíaco tem duas fases: **sístole** (contracção) e **diástole** (relaxamento).\n\n> Conteúdo de exemplo (exige assinatura).', 25, false, 'published', 2),
   ('50000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000001',
    'Aula em preparação', 'aula-em-preparacao', null, 'Rascunho.', 10, false, 'draft', 3);
 

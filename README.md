@@ -33,6 +33,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0300_rls_policies.sql` | Políticas RLS e privilégios por coluna |
 | `…0400_secure_functions.sql` | Testes (iniciar/submeter/corrigir), URL protegido dos PDFs |
 | `…0500_dashboard_functions.sql` | Progresso por disciplina para o dashboard |
+| `…0600_course_navigation.sql` | Índice das disciplinas, contexto das aulas, registo de progresso |
 
 ### Ambiente local (requer Docker)
 
@@ -108,6 +109,17 @@ E em **Authentication → URL Configuration**: definir o *Site URL* com o domín
 e adicionar `https://<domínio>/**` aos *Redirect URLs*.
 
 Localmente, os e-mails podem ser vistos no Mailpit: http://127.0.0.1:54324
+
+## Conteúdos
+
+Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recursos**.
+
+- Administração em `/admin/cursos`: novos itens são criados como **rascunho**; só
+  ficam visíveis para estudantes quando o item **e todos os níveis acima** estão publicados.
+- O conteúdo das aulas é escrito em **Markdown** (HTML embutido não é interpretado).
+- Vídeos: links do YouTube (incorporados em modo de privacidade reforçada) e Vimeo.
+- Só é possível eliminar um item sem conteúdos dentro (preferir **Arquivado**).
+- Estudantes: `/cursos` → curso → disciplina (índice com cadeados) → `/aulas/[id]`.
 
 ## Segurança
 

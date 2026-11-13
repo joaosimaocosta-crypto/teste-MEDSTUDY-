@@ -21,12 +21,14 @@ export type NavItem = {
   mobile: boolean;
   /** Só fica activo no URL exacto (ex.: "/admin" não deve marcar "/admin/estudantes"). */
   exact?: boolean;
+  /** Outros prefixos que também marcam este item como activo. */
+  also?: string[];
 };
 
 /** Navegação da área do estudante (ordem = ordem no menu). */
 export const STUDENT_NAV: NavItem[] = [
   { href: "/painel", label: "Início", icon: House, mobile: true },
-  { href: "/cursos", label: "Cursos", icon: BookOpen, mobile: true },
+  { href: "/cursos", label: "Cursos", icon: BookOpen, mobile: true, also: ["/aulas"] },
   { href: "/manuais", label: "Manuais", icon: FileText, mobile: true },
   { href: "/testes", label: "Testes", icon: ClipboardCheck, mobile: true },
   { href: "/progresso", label: "Progresso", icon: TrendingUp, mobile: false },
@@ -38,7 +40,13 @@ export const STUDENT_NAV: NavItem[] = [
 export const ADMIN_NAV: NavItem[] = [
   { href: "/admin", label: "Visão geral", icon: LayoutDashboard, mobile: true, exact: true },
   { href: "/admin/estudantes", label: "Estudantes", icon: Users, mobile: true },
-  { href: "/admin/cursos", label: "Cursos", icon: BookOpen, mobile: true },
+  {
+    href: "/admin/cursos",
+    label: "Cursos",
+    icon: BookOpen,
+    mobile: true,
+    also: ["/admin/disciplinas", "/admin/modulos", "/admin/capitulos", "/admin/aulas"],
+  },
   { href: "/admin/manuais", label: "Manuais", icon: FileText, mobile: true },
   { href: "/admin/testes", label: "Testes", icon: ClipboardCheck, mobile: true },
   { href: "/admin/planos", label: "Planos", icon: Tags, mobile: true },
