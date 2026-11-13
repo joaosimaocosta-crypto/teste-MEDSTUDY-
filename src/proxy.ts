@@ -17,6 +17,6 @@ export const config = {
      *  - favicon e imagens
      *  - api/health (monitorização, não precisa de sessão)
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|pdf.worker.min.mjs|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

@@ -85,7 +85,7 @@ select is(
   1, 'Índice marca 1 aula como bloqueada'
 );
 select is((select count(*)::int from public.resources where lesson_id in ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000002','50000000-0000-0000-0000-000000000003')), 0, 'Sem assinatura não vê recursos de aulas pagas');
-select is((select count(*)::int from public.manuals where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Vê a lista de manuais publicados');
+select is((select count(*)::int from public.manuals where id = '60000000-0000-0000-0000-000000000001'), 1, 'Vê a lista de manuais publicados');
 select throws_ok(
   $$ select pdf_url from public.manuals $$,
   '42501', null, 'Não consegue ler pdf_url directamente'

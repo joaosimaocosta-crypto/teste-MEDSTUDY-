@@ -121,6 +121,18 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
 - Só é possível eliminar um item sem conteúdos dentro (preferir **Arquivado**).
 - Estudantes: `/cursos` → curso → disciplina (índice com cadeados) → `/aulas/[id]`.
 
+## Manuais PDF
+
+- Os PDFs ficam alojados na **Lunes Host**; a plataforma guarda apenas o endereço.
+- Administração em `/admin/manuais` (com pré-visualização antes de publicar).
+- Os estudantes nunca recebem o endereço real: o PDF é entregue por
+  `/api/manuals/[id]`, que verifica a sessão e a assinatura **na base de dados**
+  (`get_manual_pdf_url`) e transmite o ficheiro por partes (cabeçalho `Range`).
+- Visualizador PDF.js (versão *legacy*, compatível com Android antigos); o worker é
+  copiado para `public/` automaticamente por `scripts/copy-pdf-worker.mjs`.
+- Protecção SSRF: só `https`, sem `localhost`/redes privadas, redireccionamentos
+  validados; em produção defina `MANUALS_ALLOWED_HOSTS`.
+
 ## Segurança
 
 - Nunca fazer commit de `.env.local`.

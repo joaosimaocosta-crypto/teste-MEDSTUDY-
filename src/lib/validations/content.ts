@@ -81,3 +81,19 @@ export const resourceSchema = z.object({
   url: httpsUrl,
   description: z.preprocess(emptyToNull, z.string().trim().max(500).nullable()),
 });
+
+const optionalGuid = z.preprocess(emptyToNull, z.guid({ message: "Selecção inválida." }).nullable());
+
+/** Manual em PDF (o ficheiro fica na Lunes Host; aqui guarda-se o endereço). */
+export const manualSchema = z.object({
+  title,
+  description,
+  status,
+  course_id: z.guid({ message: "Seleccione o curso." }),
+  subject_id: optionalGuid,
+  pdf_url: httpsUrl.refine((u) => !/\s/.test(u), { message: "O endereço não pode ter espaços." }),
+  page_count: z.preprocess(
+    (v) => (v === "" || v == null ? null : Number(v)),
+    z.number({ message: "Número inválido." }).int().min(1).max(10_000).nullable(),
+  ),
+});
