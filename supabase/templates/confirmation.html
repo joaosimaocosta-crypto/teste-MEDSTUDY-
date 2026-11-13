@@ -1,0 +1,12 @@
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; color: #0f172a;">
+  <h2 style="color: #0d9488;">MEDSTUDY MOZ</h2>
+  <p>Olá,</p>
+  <p>Obrigado por se registar no MEDSTUDY MOZ. Para activar a sua conta, confirme o seu endereço de e-mail:</p>
+  <p style="margin: 28px 0;">
+    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/painel"
+       style="background: #0d9488; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold;">
+      Confirmar e-mail
+    </a>
+  </p>
+  <p style="font-size: 13px; color: #5b6b7c;">Se não criou esta conta, ignore esta mensagem.</p>
+</div>

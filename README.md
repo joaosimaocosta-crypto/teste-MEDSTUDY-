@@ -82,6 +82,32 @@ src/
 supabase/           # migrations/ e seed.sql (Fase 2)
 ```
 
+## Autenticação
+
+| Rota | Função |
+|---|---|
+| `/registar` | Criar conta (confirmação por e-mail) |
+| `/entrar` | Iniciar sessão |
+| `/recuperar-senha` | Pedir link de redefinição |
+| `/nova-senha` | Definir nova senha (após o link) |
+| `/auth/confirm` | Destino dos links dos e-mails |
+| `/painel` | Área do estudante (protegida) |
+| `/admin` | Área administrativa (só `admin`) |
+
+Camadas de protecção: `src/proxy.ts` (verificação rápida da sessão) →
+`requireUser()` / `requireAdmin()` em `src/lib/auth/session.ts` (servidor) → RLS na base de dados.
+
+### Modelos de e-mail (produção)
+
+No Supabase → **Authentication → Email Templates**, substituir:
+- **Confirm signup** pelo conteúdo de `supabase/templates/confirmation.html`
+- **Reset password** pelo conteúdo de `supabase/templates/recovery.html`
+
+E em **Authentication → URL Configuration**: definir o *Site URL* com o domínio da aplicação
+e adicionar `https://<domínio>/**` aos *Redirect URLs*.
+
+Localmente, os e-mails podem ser vistos no Mailpit: http://127.0.0.1:54324
+
 ## Segurança
 
 - Nunca fazer commit de `.env.local`.

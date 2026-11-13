@@ -1,5 +1,9 @@
-import { BookOpen, ClipboardCheck, FileText, GraduationCap, Stethoscope } from "lucide-react";
+import { BookOpen, ClipboardCheck, FileText, GraduationCap } from "lucide-react";
+import Link from "next/link";
+import { buttonClasses } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ROUTES } from "@/lib/auth/routes";
 
 const features = [
   { icon: GraduationCap, title: "Cursos organizados", text: "Disciplinas, módulos, capítulos e aulas." },
@@ -8,20 +12,18 @@ const features = [
   { icon: BookOpen, title: "Progresso", text: "Acompanha a tua evolução ao longo do curso." },
 ];
 
-/** Página inicial provisória (Fase 1) — confirma que o tema e as cores funcionam. */
+/** Página inicial provisória — a versão final é desenhada na Fase 4. */
 export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-6 sm:px-6 sm:py-10">
       <header className="flex items-center justify-between">
+        <Logo href={null} />
         <div className="flex items-center gap-2">
-          <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Stethoscope className="size-5" aria-hidden />
-          </span>
-          <span className="text-lg font-bold tracking-tight">
-            MEDSTUDY <span className="text-primary">MOZ</span>
-          </span>
+          <Link href={ROUTES.login} className={buttonClasses({ variant: "ghost", size: "sm" })}>
+            Entrar
+          </Link>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </header>
 
       <section className="flex flex-col gap-4">
@@ -34,6 +36,14 @@ export default function Home() {
         <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
           A plataforma de estudo para estudantes de Técnico de Medicina Geral em Moçambique.
         </p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link href={ROUTES.register} className={buttonClasses({ size: "lg" })}>
+            Criar conta
+          </Link>
+          <Link href={ROUTES.login} className={buttonClasses({ variant: "secondary", size: "lg" })}>
+            Já tenho conta
+          </Link>
+        </div>
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -54,7 +64,7 @@ export default function Home() {
       </section>
 
       <footer className="mt-auto text-center text-xs text-muted-foreground">
-        © MEDSTUDY MOZ — Fase 1: ambiente preparado
+        © MEDSTUDY MOZ — Fase 3: autenticação
       </footer>
     </main>
   );
