@@ -17,7 +17,7 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:lint": "supabase db lint --level warning",
-    "db:types": "supabase gen types typescript --local > src/types/database.ts"
+    "db:types": "supabase gen types typescript --local > .types.tmp && mv .types.tmp src/types/database.ts || (rm -f .types.tmp && exit 1)"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

@@ -97,3 +97,48 @@ export const manualSchema = z.object({
     z.number({ message: "Número inválido." }).int().min(1).max(10_000).nullable(),
   ),
 });
+
+const optionalInt = (min: number, max: number, msg: string) =>
+  z.preprocess(
+    (v) => (v === "" || v == null ? null : Number(v)),
+    z.number({ message: msg }).int({ message: msg }).min(min, { message: msg }).max(max, { message: msg }).nullable(),
+  );
+
+/** Teste / avaliação. */
+export const quizSchema = z.object({
+  title,
+  description,
+  status,
+  course_id: z.guid({ message: "Seleccione o curso." }),
+  subject_id: optionalGuid,
+  time_limit_minutes: optionalInt(1, 600, "Entre 1 e 600 minutos (ou vazio para sem limite)."),
+  passing_score: z.preprocess(
+    (v) => Number(v),
+    z.number({ message: "Indique a nota mínima." }).int().min(0, { message: "Entre 0 e 100." }).max(100, { message: "Entre 0 e 100." }),
+  ),
+  max_attempts: optionalInt(1, 100, "Entre 1 e 100 (ou vazio para ilimitado)."),
+  shuffle_questions: z.preprocess((v) => v === "on" || v === "true", z.boolean()),
+});
+
+const optionText = z
+  .string({ message: "Preencha a alternativa." })
+  .trim()
+  .min(1, { message: "Preencha a alternativa." })
+  .max(1000, { message: "Alternativa demasiado longa." });
+
+/** Pergunta de escolha múltipla com 4 alternativas. */
+export const questionSchema = z
+  .object({
+    statement: z.string().trim().min(3, { message: "Escreva o enunciado." }).max(4000, { message: "Enunciado demasiado longo." }),
+    option_a: optionText,
+    option_b: optionText,
+    option_c: optionText,
+    option_d: optionText,
+    correct_option: z.enum(["A", "B", "C", "D"], { message: "Indique a resposta correcta." }),
+    explanation: z.preprocess(emptyToNull, z.string().trim().max(4000, { message: "Explicação demasiado longa." }).nullable()),
+    points: z.preprocess((v) => (v === "" || v == null ? 1 : Number(v)), z.number().int().min(1, { message: "Entre 1 e 100." }).max(100, { message: "Entre 1 e 100." })),
+  })
+  .refine(
+    (q) => new Set([q.option_a, q.option_b, q.option_c, q.option_d].map((o) => o.toLowerCase())).size === 4,
+    { message: "As quatro alternativas devem ser diferentes.", path: ["option_d"] },
+  );

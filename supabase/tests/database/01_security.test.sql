@@ -94,7 +94,7 @@ select throws_ok(
   $$ select public.get_manual_pdf_url('60000000-0000-0000-0000-000000000001') $$,
   '42501', null, 'Sem assinatura não obtém o endereço do PDF'
 );
-select is((select count(*)::int from public.quizzes where course_id = '10000000-0000-0000-0000-000000000001'), 1, 'Vê o teste publicado');
+select is((select count(*)::int from public.quizzes where id = '70000000-0000-0000-0000-000000000001'), 1, 'Vê o teste publicado');
 select is((select count(*)::int from public.questions), 0, 'Nunca lê a tabela de perguntas (respostas correctas)');
 select throws_ok(
   $$ select public.start_quiz_attempt('70000000-0000-0000-0000-000000000001') $$,
@@ -148,7 +148,7 @@ set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-0000-0000-000000000009","r
 
 select is((select count(*)::int from public.profiles), (select profiles from _totals), 'Admin vê todos os perfis');
 select is((select count(*)::int from public.lessons where course_id = '10000000-0000-0000-0000-000000000001'), 3, 'Admin vê todas as aulas, incluindo rascunhos');
-select is((select count(*)::int from public.questions), 3, 'Admin gere as perguntas');
+select is((select count(*)::int from public.questions where quiz_id = '70000000-0000-0000-0000-000000000001'), 3, 'Admin gere as perguntas');
 select is(
   public.get_manual_pdf_url('60000000-0000-0000-0000-000000000001'),
   'https://exemplo.invalid/manuais/anatomia.pdf', 'Admin obtém o endereço do PDF'

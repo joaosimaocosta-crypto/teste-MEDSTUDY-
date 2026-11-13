@@ -34,6 +34,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0400_secure_functions.sql` | Testes (iniciar/submeter/corrigir), URL protegido dos PDFs |
 | `…0500_dashboard_functions.sql` | Progresso por disciplina para o dashboard |
 | `…0600_course_navigation.sql` | Índice das disciplinas, contexto das aulas, registo de progresso |
+| `…0700_quiz_catalog.sql` | Catálogo de testes (nº de perguntas, tentativas, melhor nota) |
 
 ### Ambiente local (requer Docker)
 
@@ -132,6 +133,15 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
   copiado para `public/` automaticamente por `scripts/copy-pdf-worker.mjs`.
 - Protecção SSRF: só `https`, sem `localhost`/redes privadas, redireccionamentos
   validados; em produção defina `MANUALS_ALLOWED_HOSTS`.
+
+## Testes e avaliações
+
+- Administração em `/admin/testes`: tempo limite, nota mínima, nº máximo de tentativas,
+  perguntas baralhadas; perguntas com 4 alternativas, resposta correcta, explicação e pontos.
+  Só é possível publicar com perguntas; testes com tentativas só podem ser arquivados.
+- Estudante em `/testes`: as perguntas chegam **sem** a resposta correcta; a correcção e a
+  pontuação são feitas **na base de dados** (`submit_quiz_attempt`). Cronómetro com submissão
+  automática (tolerância de 60 s no servidor) e respostas guardadas no dispositivo até submeter.
 
 ## Segurança
 

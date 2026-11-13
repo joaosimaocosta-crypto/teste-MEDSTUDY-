@@ -481,6 +481,11 @@ isOneToOne: false
               "duration_minutes": number,"id": string,"is_free_preview": boolean,"is_locked": boolean,"position": number,"slug": string,"summary": string,"title": string
             }[]
                            },
+"quiz_catalog":
+{ Args: { "p_quiz_id"?: string }; Returns: {
+              "attempts_used": number,"best_percentage": number,"course_id": string,"course_title": string,"description": string,"in_progress_attempt_id": string,"is_locked": boolean,"max_attempts": number,"passed_once": boolean,"passing_score": number,"question_count": number,"quiz_id": string,"subject_id": string,"subject_title": string,"time_limit_minutes": number,"title": string,"total_points": number
+            }[]
+                           },
 "set_lesson_completed":
 { Args: { "p_completed": boolean,"p_lesson_id": string }; Returns: undefined
                            },
