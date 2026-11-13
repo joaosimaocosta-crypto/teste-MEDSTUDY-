@@ -33,6 +33,11 @@
   /* Gráficos (validados com o validador de paleta: luminosidade e contraste) */
   --chart-1: #0d9488;
   --chart-track: #d5f5ef;
+  /* Escala sequencial do mapa de actividade (validada: monotónica, contraste ≥ 2:1) */
+  --heat-1: #5ec4b6;
+  --heat-2: #30a596;
+  --heat-3: #167f73;
+  --heat-4: #0a5951;
 }
 
 .dark {
@@ -59,6 +64,10 @@
 
   --chart-1: #0fa596;
   --chart-track: #133a36;
+  --heat-1: #1f6a62;
+  --heat-2: #228a7e;
+  --heat-3: #29ad9e;
+  --heat-4: #62e2d1;
 }
 
 @theme inline {
@@ -81,6 +90,10 @@
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-track: var(--chart-track);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
 
   --radius-card: var(--radius);
 

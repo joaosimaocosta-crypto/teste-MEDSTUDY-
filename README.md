@@ -35,6 +35,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0500_dashboard_functions.sql` | Progresso por disciplina para o dashboard |
 | `…0600_course_navigation.sql` | Índice das disciplinas, contexto das aulas, registo de progresso |
 | `…0700_quiz_catalog.sql` | Catálogo de testes (nº de perguntas, tentativas, melhor nota) |
+| `…0800_progress_tracking.sql` | Actividade diária (triggers), progresso por disciplina, estatísticas por pergunta |
 
 ### Ambiente local (requer Docker)
 
@@ -142,6 +143,15 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
 - Estudante em `/testes`: as perguntas chegam **sem** a resposta correcta; a correcção e a
   pontuação são feitas **na base de dados** (`submit_quiz_attempt`). Cronómetro com submissão
   automática (tolerância de 60 s no servidor) e respostas guardadas no dispositivo até submeter.
+
+## Progresso
+
+- Tabela `student_activity_days`: uma linha por estudante e dia (aulas abertas, concluídas,
+  testes submetidos), preenchida **apenas por triggers** na BD — o estudante não a pode alterar.
+- Estudante em `/progresso`: % concluída, tempo de estudo (duração das aulas concluídas),
+  sequência de dias, mapa de actividade (12 semanas), evolução das notas, progresso por disciplina.
+- Administração: actividade e progresso na ficha do estudante, taxa de acerto por pergunta,
+  testes com mais dificuldade na visão geral.
 
 ## Segurança
 

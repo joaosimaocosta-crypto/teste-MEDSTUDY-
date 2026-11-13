@@ -6,6 +6,7 @@ import { deleteQuestion, deleteQuiz, moveQuestion, saveQuestion, saveQuiz } from
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
+import { Meter } from "@/components/ui/meter";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { cn } from "@/lib/utils";
 import { initialFormState } from "@/lib/validations/auth";
@@ -344,11 +345,14 @@ export function QuestionItem({
   index,
   total,
   question,
+  stats,
 }: {
   quizId: string;
   index: number;
   total: number;
   question: QuestionValues & { id: string };
+  /** Respostas e taxa de acerto (tentativas submetidas). */
+  stats?: { answered: number; correct_rate: number | null };
 }) {
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -426,6 +430,17 @@ export function QuestionItem({
             })}
           </ul>
           {question.explanation && <p className="mt-2 text-sm text-muted-foreground">Explicação: {question.explanation}</p>}
+          {stats && stats.answered > 0 && stats.correct_rate !== null && (
+            <div className="mt-3 flex items-center gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
+              <span className="shrink-0">
+                Acerto: <strong className="text-foreground tabular-nums">{Math.round(Number(stats.correct_rate))}%</strong> ({stats.answered}{" "}
+                {stats.answered === 1 ? "resposta" : "respostas"})
+              </span>
+              <div className="flex-1">
+                <Meter value={Number(stats.correct_rate)} label={`Taxa de acerto da pergunta ${index + 1}`} />
+              </div>
+            </div>
+          )}
         </>
       )}
     </li>

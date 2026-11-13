@@ -36,7 +36,7 @@ async function EditQuiz({ params, searchParams }: Props) {
   if (!z.guid().safeParse(id).success) notFound();
   const [data, { courses, subjects }] = await Promise.all([getQuizForAdmin(id), getCourseOptions()]);
   if (!data) notFound();
-  const { quiz, questions, stats } = data;
+  const { quiz, questions, stats, questionStats } = data;
   const st = PUBLICATION_STATUS[quiz.status];
 
   return (
@@ -100,6 +100,7 @@ async function EditQuiz({ params, searchParams }: Props) {
                     quizId={quiz.id}
                     index={i}
                     total={questions.length}
+                    stats={questionStats.get(q.id)}
                     question={{
                       id: q.id,
                       statement: q.statement,

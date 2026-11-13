@@ -17,6 +17,7 @@ import { AdminOnly } from "@/components/auth/admin-only";
 import { ColumnChart } from "@/components/charts/column-chart";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Meter } from "@/components/ui/meter";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatTile } from "@/components/ui/stat-tile";
 import { formatMZN, formatNumber, shortDate } from "@/lib/format";
@@ -90,6 +91,29 @@ async function Overview() {
         <StatTile icon={FileText} label="Manuais publicados" value={formatNumber(content.manuals)} />
         <StatTile icon={ClipboardCheck} label="Testes publicados" value={formatNumber(content.quizzes)} />
       </section>
+
+      <Card>
+        <CardHeader title="Testes com mais dificuldade" description="Menor taxa de aprovação nos últimos 90 dias (mín. 3 tentativas)" />
+        {data.hardestQuizzes.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Ainda não há tentativas suficientes para comparar.</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {data.hardestQuizzes.map((q) => (
+              <li key={q.id}>
+                <Link href={`/admin/testes/${q.id}`} className="flex flex-col gap-1.5 hover:text-primary">
+                  <div className="flex items-baseline justify-between gap-3 text-sm">
+                    <span className="min-w-0 truncate font-medium">{q.title}</span>
+                    <span className="shrink-0 tabular-nums text-muted-foreground">
+                      {q.passRate}% aprovados · média {q.average}% · {q.attempts} tentativas
+                    </span>
+                  </div>
+                  <Meter value={q.passRate} label={`Taxa de aprovação em ${q.title}`} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
         <Card>

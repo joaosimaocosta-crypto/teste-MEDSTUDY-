@@ -94,16 +94,18 @@ export async function listQuizzesForAdmin() {
 export async function getQuizForAdmin(id: string) {
   await requireAdmin();
   const supabase = await createClient();
-  const [{ data: quiz }, { data: questions }, { data: attempts }] = await Promise.all([
+  const [{ data: quiz }, { data: questions }, { data: attempts }, { data: qstats }] = await Promise.all([
     supabase.from("quizzes").select("*").eq("id", id).maybeSingle(),
     supabase.from("questions").select("*").eq("quiz_id", id).order("position").order("created_at"),
     supabase.from("quiz_attempts").select("percentage, passed, status").eq("quiz_id", id).neq("status", "in_progress"),
+    supabase.rpc("admin_question_stats", { p_quiz_id: id }),
   ]);
   if (!quiz) return null;
   const done = attempts ?? [];
   return {
     quiz,
     questions: questions ?? [],
+    questionStats: new Map((qstats ?? []).map((q) => [q.question_id, q])),
     stats: {
       attempts: done.length,
       average: done.length ? Math.round(done.reduce((s, a) => s + Number(a.percentage), 0) / done.length) : null,

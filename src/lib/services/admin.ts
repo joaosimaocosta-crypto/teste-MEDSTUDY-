@@ -1,6 +1,7 @@
 import "server-only";
 import { requireAdmin } from "@/lib/auth/session";
 import { dayKey } from "@/lib/format";
+import { buildHeatmap, computeStreaks, type ActivityDay } from "@/lib/progress";
 import { createClient } from "@/lib/supabase/server";
 import { effectiveStatus, pickCurrentSubscription, type SubscriptionStatus } from "@/lib/subscriptions";
 import type { Database } from "@/types/database";
@@ -74,6 +75,13 @@ export async function getAdminOverview() {
       .order("created_at", { ascending: false })
       .limit(5),
   ]);
+  const since90 = new Date(now.getTime() - 90 * DAY_MS).toISOString();
+  const { data: recentAttempts, error: raError } = await supabase
+    .from("quiz_attempts")
+    .select("quiz_id, percentage, passed, quiz:quizzes(title)")
+    .neq("status", "in_progress")
+    .gte("submitted_at", since90);
+  logError("overview[attempts90]", raError);
 
   [students, newStudents, activeSubs, pendingSubs, expiringSubs, courses, lessons, manuals, quizzes, attempts30, paymentsMonth, signups, pendingList, recentStudents].forEach(
     (r, i) => logError(`overview[${i}]`, r.error),
@@ -120,7 +128,25 @@ export async function getAdminOverview() {
       studentName: s.student?.full_name || s.student?.email || "—",
     })),
     recentStudents: recentStudents.data ?? [],
+    hardestQuizzes: hardestQuizzes(recentAttempts ?? []),
   };
+}
+
+/** Testes com menor taxa de aprovação (últimos 90 dias, mínimo 3 tentativas). */
+function hardestQuizzes(rows: { quiz_id: string; percentage: number; passed: boolean; quiz: { title: string } | null }[]) {
+  const byQuiz = new Map<string, { id: string; title: string; n: number; passed: number; sum: number }>();
+  for (const r of rows) {
+    const q = byQuiz.get(r.quiz_id) ?? { id: r.quiz_id, title: r.quiz?.title ?? "Teste", n: 0, passed: 0, sum: 0 };
+    q.n++;
+    q.passed += r.passed ? 1 : 0;
+    q.sum += Number(r.percentage);
+    byQuiz.set(r.quiz_id, q);
+  }
+  return [...byQuiz.values()]
+    .filter((q) => q.n >= 3)
+    .map((q) => ({ id: q.id, title: q.title, attempts: q.n, passRate: Math.round((q.passed / q.n) * 100), average: Math.round(q.sum / q.n) }))
+    .sort((a, b) => a.passRate - b.passRate || a.average - b.average)
+    .slice(0, 5);
 }
 
 // =============================================================================
@@ -202,7 +228,8 @@ export async function getStudentDetail(userId: string) {
   await requireAdmin();
   const supabase = await createClient();
 
-  const [profile, subs, payments, attempts, progress] = await Promise.all([
+  const since = dayKey(new Date(Date.now() - 400 * DAY_MS));
+  const [profile, subs, payments, attempts, progress, subjects, activity] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, email, phone, province, institution, academic_year, role, created_at")
@@ -230,8 +257,15 @@ export async function getStudentDetail(userId: string) {
       .select("status, last_viewed_at")
       .eq("user_id", userId)
       .order("last_viewed_at", { ascending: false }),
+    supabase.rpc("admin_student_subject_progress", { p_user_id: userId }),
+    supabase
+      .from("student_activity_days")
+      .select("day, lessons_viewed, lessons_completed, quizzes_submitted")
+      .eq("user_id", userId)
+      .gte("day", since)
+      .order("day"),
   ]);
-  [profile, subs, payments, attempts, progress].forEach((r, i) => logError(`detail[${i}]`, r.error));
+  [profile, subs, payments, attempts, progress, subjects, activity].forEach((r, i) => logError(`detail[${i}]`, r.error));
 
   if (!profile.data) return null;
 
@@ -243,6 +277,9 @@ export async function getStudentDetail(userId: string) {
     subscriptions: (subs.data ?? []).map((s) => ({ ...s, effective: effectiveStatus(s) })),
     payments: payments.data ?? [],
     attempts: attemptRows,
+    subjects: subjects.data ?? [],
+    streaks: computeStreaks((activity.data ?? []) as ActivityDay[]),
+    heatmap: buildHeatmap((activity.data ?? []) as ActivityDay[], 12),
     summary: {
       lessonsCompleted: completed,
       lastActivity: progress.data?.[0]?.last_viewed_at ?? null,

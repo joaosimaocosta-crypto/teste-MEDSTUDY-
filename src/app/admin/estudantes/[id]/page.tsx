@@ -5,13 +5,16 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
 import { AdminOnly } from "@/components/auth/admin-only";
+import { ActivityHeatmap } from "@/components/charts/activity-heatmap";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Meter } from "@/components/ui/meter";
 import { StatTile } from "@/components/ui/stat-tile";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatMZN, shortDate, shortDateTime } from "@/lib/format";
 import { getStudentDetail } from "@/lib/services/admin";
+import { formatMinutes } from "@/lib/progress";
 import { SUBSCRIPTION_STATUS } from "@/lib/subscriptions";
 import { RoleControl } from "../role-control";
 
@@ -55,7 +58,7 @@ async function StudentDetail({ params }: { params: PageProps<"/admin/estudantes/
   const [detail, me] = await Promise.all([getStudentDetail(id), getCurrentUser()]);
   if (!detail) notFound();
 
-  const { profile, subscriptions, payments, attempts, summary } = detail;
+  const { profile, subscriptions, payments, attempts, summary, subjects, streaks, heatmap } = detail;
 
   return (
     <div className="flex flex-col gap-5 lg:gap-6">
@@ -74,6 +77,39 @@ async function StudentDetail({ params }: { params: PageProps<"/admin/estudantes/
           value={summary.lastActivity ? shortDate(summary.lastActivity) : "—"}
         />
       </section>
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-5 lg:gap-6">
+        <Card className="lg:col-span-3">
+          <CardHeader
+            title="Actividade"
+            description={`Sequência actual: ${streaks.current} ${streaks.current === 1 ? "dia" : "dias"} · melhor: ${streaks.best} · ${streaks.last30} dias de estudo nos últimos 30`}
+          />
+          <ActivityHeatmap columns={heatmap.columns} />
+        </Card>
+        <Card className="lg:col-span-2">
+          <CardHeader title="Progresso por disciplina" />
+          {subjects.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Sem conteúdos publicados.</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {subjects.map((s) => {
+                const pct = s.total_lessons ? Math.round((s.completed_lessons / s.total_lessons) * 100) : 0;
+                return (
+                  <li key={s.subject_id} className="flex flex-col gap-1.5">
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="min-w-0 truncate">{s.subject_title}</span>
+                      <span className="shrink-0 tabular-nums text-muted-foreground">
+                        {pct}% · {s.completed_lessons}/{s.total_lessons} · {formatMinutes(s.completed_minutes)}
+                      </span>
+                    </div>
+                    <Meter value={pct} label={`Progresso em ${s.subject_title}`} />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
         <Card className="lg:col-span-2">

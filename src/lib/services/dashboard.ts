@@ -54,7 +54,7 @@ export async function getDashboardData(user: CurrentUser): Promise<DashboardData
   const supabase = await createClient();
   const now = new Date();
 
-  const [subsRes, progressRes, attemptsRes, subjectsRes] = await Promise.all([
+  const [subsRes, progressRes, attemptsRes, subjectsRes, activityRes] = await Promise.all([
     supabase
       .from("subscriptions")
       .select("status, starts_at, expires_at, created_at, plan:subscription_plans(name)")
@@ -73,9 +73,15 @@ export async function getDashboardData(user: CurrentUser): Promise<DashboardData
       .neq("status", "in_progress")
       .order("submitted_at", { ascending: false }),
     supabase.rpc("student_subject_progress"),
+    // Actividade diária (registada pela BD) — fonte exacta dos dias de estudo
+    supabase
+      .from("student_activity_days")
+      .select("day")
+      .eq("user_id", user.id)
+      .gte("day", dayKey(new Date(now.getTime() - 6 * DAY_MS))),
   ]);
 
-  for (const [name, res] of Object.entries({ subsRes, progressRes, attemptsRes, subjectsRes })) {
+  for (const [name, res] of Object.entries({ subsRes, progressRes, attemptsRes, subjectsRes, activityRes })) {
     if (res.error) console.error(`[dashboard] ${name}:`, res.error.message);
   }
 
@@ -112,17 +118,7 @@ export async function getDashboardData(user: CurrentUser): Promise<DashboardData
     }
   }
 
-  const activeDays = new Set<string>();
-  const addDay = (iso: string | null) => {
-    if (!iso) return;
-    const key = dayKey(new Date(iso));
-    if (byKey.has(key)) activeDays.add(key);
-  };
-  progress.forEach((p) => {
-    addDay(p.last_viewed_at);
-    addDay(p.completed_at);
-  });
-  attempts.forEach((a) => addDay(a.submitted_at));
+  const activeDays = new Set((activityRes.data ?? []).map((d) => d.day).filter((d) => byKey.has(d)));
 
   const averageScore =
     attempts.length > 0

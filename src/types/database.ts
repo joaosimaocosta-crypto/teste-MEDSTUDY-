@@ -309,6 +309,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"student_activity_days": {
+                  Row: {
+                    "day": string,"lessons_completed": number,"lessons_viewed": number,"quizzes_submitted": number,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "day": string,"lessons_completed"?: number,"lessons_viewed"?: number,"quizzes_submitted"?: number,"user_id": string
+                  }
+                  Update: {
+                    "day"?: string,"lessons_completed"?: number,"lessons_viewed"?: number,"quizzes_submitted"?: number,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "student_activity_days_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"student_progress": {
                   Row: {
                     "completed_at": string | null,"created_at": string,"id": string,"last_viewed_at": string,"lesson_id": string,"status": Database["public"]['Enums']["progress_status"],"updated_at": string,"user_id": string
@@ -435,9 +455,30 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"_log_activity":
+{ Args: { "p_completed": number,"p_quizzes": number,"p_user_id": string,"p_viewed": number }; Returns: undefined
+                           },
+"_maputo_day":
+{ Args: { "ts": string }; Returns: string
+                           },
 "_subject_lessons_ordered":
 { Args: { "p_subject_id": string }; Returns: {
               "chapter_id": string,"chapter_position": number,"chapter_title": string,"course_id": string,"duration_minutes": number,"is_free_preview": boolean,"lesson_id": string,"lesson_position": number,"lesson_summary": string,"lesson_title": string,"module_id": string,"module_position": number,"module_title": string,"seq": number
+            }[]
+                           },
+"_subject_progress_for":
+{ Args: { "p_user_id": string }; Returns: {
+              "completed_lessons": number,"completed_minutes": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
+            }[]
+                           },
+"admin_question_stats":
+{ Args: { "p_quiz_id": string }; Returns: {
+              "answered": number,"correct": number,"correct_rate": number,"question_id": string
+            }[]
+                           },
+"admin_student_subject_progress":
+{ Args: { "p_user_id": string }; Returns: {
+              "completed_lessons": number,"completed_minutes": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
             }[]
                            },
 "can_access_lesson":
@@ -479,6 +520,11 @@ isOneToOne: false
 "lesson_outline":
 { Args: { "p_chapter_id": string }; Returns: {
               "duration_minutes": number,"id": string,"is_free_preview": boolean,"is_locked": boolean,"position": number,"slug": string,"summary": string,"title": string
+            }[]
+                           },
+"my_subject_progress":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "completed_lessons": number,"completed_minutes": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
             }[]
                            },
 "quiz_catalog":
