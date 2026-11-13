@@ -11,10 +11,12 @@ export function ComingSoon({
   icon,
   title,
   description,
+  backHref = ROUTES.dashboard,
 }: {
   icon: LucideIcon;
   title: string;
   description: string;
+  backHref?: string;
 }) {
   return (
     <>
@@ -25,7 +27,7 @@ export function ComingSoon({
           title="Disponível em breve"
           description="Esta secção está a ser preparada e ficará disponível numa próxima actualização."
           action={
-            <Link href={ROUTES.dashboard} className={buttonClasses({ variant: "secondary", size: "sm" })}>
+            <Link href={backHref} className={buttonClasses({ variant: "secondary", size: "sm" })}>
               Voltar ao início
             </Link>
           }

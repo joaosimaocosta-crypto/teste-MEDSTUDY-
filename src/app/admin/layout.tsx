@@ -1,15 +1,14 @@
-import { AppHeader } from "@/components/layout/app-header";
+import { AdminShell } from "@/components/layout/admin-shell";
 
 /**
- * Layout da área administrativa.
- * A protecção é feita em cada página/acção com requireAdmin() — o proxy apenas
- * garante que há sessão; o papel "admin" é sempre verificado no servidor.
+ * Layout da área administrativa (apenas a estrutura visual: menu e cabeçalho).
+ *
+ * ⚠️ Um layout NÃO protege as páginas (cada segmento é renderizado à parte).
+ * Protecção em camadas:
+ *  1. proxy.ts — sem sessão → /entrar
+ *  2. <AdminOnly> em CADA page.tsx — nada é enviado antes de requireAdmin()
+ *  3. Cada consulta/acção chama requireAdmin() e a BD aplica RLS.
  */
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
-  return (
-    <div className="flex min-h-dvh flex-col">
-      <AppHeader />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6">{children}</main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

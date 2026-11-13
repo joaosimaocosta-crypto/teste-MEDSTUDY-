@@ -55,3 +55,20 @@ export function formatPhoneForInput(phone: string | null) {
   const local = phone.replace(/^\+?258/, "");
   return /^\d{9}$/.test(local) ? `${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5)}` : phone;
 }
+
+/** Valor em meticais: "1 500,00 MZN". */
+export function formatMZN(n: number) {
+  return `${new Intl.NumberFormat(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)} MZN`;
+}
+
+/** Data e hora curtas: "13/11/2026, 14:05". */
+export function shortDateTime(value: string | Date) {
+  return new Intl.DateTimeFormat(LOCALE, {
+    timeZone: TIME_ZONE,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}

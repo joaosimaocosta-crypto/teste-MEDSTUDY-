@@ -12,7 +12,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { WeeklyActivityChart } from "@/components/features/dashboard/weekly-activity-chart";
+import { ColumnChart } from "@/components/charts/column-chart";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
@@ -84,7 +84,13 @@ async function Dashboard({ searchParams }: { searchParams: PageProps<"/painel">[
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
         <Card className="lg:col-span-2">
           <CardHeader title="Actividade da semana" description="Aulas concluídas por dia" />
-          <WeeklyActivityChart data={data.weekly} />
+          <ColumnChart
+            data={data.weekly.map((d) => ({ key: d.date, label: d.label, value: d.lessons }))}
+            unit={["aula", "aulas"]}
+            caption="Aulas concluídas por dia nos últimos 7 dias"
+            emptyText="Ainda sem aulas concluídas esta semana."
+            lastLabel="Hoje"
+          />
         </Card>
         <ContinueCard lesson={data.continueLesson} />
       </div>

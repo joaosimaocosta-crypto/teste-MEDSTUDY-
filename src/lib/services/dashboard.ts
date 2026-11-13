@@ -2,6 +2,7 @@ import "server-only";
 import type { CurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { dayKey, weekdayShort } from "@/lib/format";
+import { effectiveStatus, isSubscriptionLive, pickCurrentSubscription } from "@/lib/subscriptions";
 import type { Database } from "@/types/database";
 
 /**
@@ -79,18 +80,13 @@ export async function getDashboardData(user: CurrentUser): Promise<DashboardData
   }
 
   // --- Assinatura -------------------------------------------------------------
-  const subs = subsRes.data ?? [];
-  const isLive = (s: (typeof subs)[number]) =>
-    s.status === "active" && s.expires_at !== null && new Date(s.expires_at) > now;
-  const chosen = subs.find(isLive) ?? subs.find((s) => s.status === "pending") ?? subs[0];
+  const chosen = pickCurrentSubscription(subsRes.data ?? [], now);
 
   let subscription: SubscriptionSummary = { status: "none", planName: null, expiresAt: null, daysLeft: null };
   if (chosen) {
-    const live = isLive(chosen);
-    const status: SubscriptionStatus =
-      chosen.status === "active" && !live ? "expired" : chosen.status;
+    const live = isSubscriptionLive(chosen, now);
     subscription = {
-      status,
+      status: effectiveStatus(chosen, now),
       planName: chosen.plan?.name ?? null,
       expiresAt: chosen.expires_at,
       daysLeft:
