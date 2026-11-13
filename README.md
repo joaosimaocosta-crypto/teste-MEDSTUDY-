@@ -18,9 +18,49 @@ Plataforma de aprendizagem online para estudantes do curso de **Técnico de Medi
 
 ```bash
 npm install
-cp .env.example .env.local   # preencher com os valores reais (Fase 2)
+cp .env.example .env.local   # preencher com os valores reais
 npm run dev                  # http://localhost:3000
 ```
+
+## Base de dados (Supabase)
+
+As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do esquema.
+
+| Ficheiro | Conteúdo |
+|---|---|
+| `…0100_core_schema.sql` | Tipos, tabelas, relações, índices |
+| `…0200_auth_and_access_functions.sql` | Perfil automático no registo, `is_admin()`, `has_course_access()` |
+| `…0300_rls_policies.sql` | Políticas RLS e privilégios por coluna |
+| `…0400_secure_functions.sql` | Testes (iniciar/submeter/corrigir), URL protegido dos PDFs |
+
+### Ambiente local (requer Docker)
+
+```bash
+npm run db:start    # arranca o Supabase local e aplica migrações + seed
+npm run db:status   # mostra URL e chaves locais (para o .env.local)
+npm run db:test     # testes de segurança (pgTAP)
+npm run db:reset    # recria a BD local do zero (apaga dados locais!)
+npm run db:types    # regenera src/types/database.ts
+```
+
+### Projecto online
+
+```bash
+npx supabase login
+npx supabase link --project-ref <ref-do-projecto>
+npx supabase db push          # aplica as migrações (não aplica o seed)
+```
+
+### Primeiro administrador
+
+1. Regista-te normalmente na aplicação.
+2. No Supabase → SQL Editor, executa:
+
+```sql
+update public.profiles set role = 'admin' where email = 'o-teu-email@exemplo.com';
+```
+
+A partir daí, os papéis são geridos no painel administrativo.
 
 ## Scripts
 
@@ -45,4 +85,5 @@ supabase/           # migrations/ e seed.sql (Fase 2)
 ## Segurança
 
 - Nunca fazer commit de `.env.local`.
-- A chave `SUPABASE_SERVICE_ROLE_KEY` é usada apenas no servidor.
+- A chave `SUPABASE_SECRET_KEY` é usada apenas no servidor (`src/lib/supabase/admin.ts`).
+- RLS activo em todas as tabelas; os estudantes nunca lêem as respostas correctas nem o endereço dos PDFs.
