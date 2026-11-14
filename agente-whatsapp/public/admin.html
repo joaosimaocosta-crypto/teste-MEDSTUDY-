@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Painel do Agente</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Login -->
+  <div id="login" class="login-wrap hidden">
+    <form class="card" id="login-form">
+      <a class="logo" href="/" style="margin-bottom:1em"><span class="logo-dot">IA</span> Painel do Agente</a>
+      <div class="field">
+        <label for="password">Senha</label>
+        <input id="password" type="password" autocomplete="current-password" required autofocus>
+      </div>
+      <p class="error" id="login-error" role="alert"></p>
+      <button class="btn" type="submit" style="width:100%">Entrar</button>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div id="app" class="admin-shell hidden">
+    <div class="topbar">
+      <a class="logo" href="/"><span class="logo-dot">IA</span> Painel do Agente</a>
+      <button class="btn secondary small" id="logout-btn">Sair</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="dashboard" aria-selected="true">Início</button>
+      <button class="tab" role="tab" data-tab="conversations" aria-selected="false">Conversas <span class="badge hidden" id="unread-badge"></span></button>
+      <button class="tab" role="tab" data-tab="settings" aria-selected="false">Configurações</button>
+    </nav>
+
+    <!-- Início -->
+    <section class="view" id="view-dashboard">
+      <div id="ai-warning" class="notice warn hidden">A chave da API (ANTHROPIC_API_KEY) não está configurada no servidor: o agente não vai responder.</div>
+      <div class="stats">
+        <div class="card stat"><div class="num" id="st-contacts">–</div><div class="lbl">Contatos</div></div>
+        <div class="card stat"><div class="num" id="st-messages">–</div><div class="lbl">Mensagens (24h)</div></div>
+        <div class="card stat"><div class="num" id="st-bot">–</div><div class="lbl">Respostas da IA (24h)</div></div>
+        <div class="card stat"><div class="num" id="st-paused">–</div><div class="lbl">Em atendimento humano</div></div>
+      </div>
+      <div class="status-grid">
+        <div class="card">
+          <h2>WhatsApp</h2>
+          <p><span class="pill" id="wa-pill">…</span></p>
+          <div id="wa-qr" class="qr hidden">
+            <img id="wa-qr-img" alt="QR code para conectar o WhatsApp">
+            <p class="muted" style="text-align:center;margin:0">No celular, abra o WhatsApp › <strong>Aparelhos conectados</strong> › <strong>Conectar um aparelho</strong> e leia este código.</p>
+          </div>
+          <div id="wa-connected" class="hidden">
+            <p>Conectado como <strong id="wa-me"></strong>.</p>
+            <button class="btn danger small" id="wa-logout">Desconectar número</button>
+          </div>
+          <p class="error" id="wa-error"></p>
+        </div>
+        <div class="card">
+          <h2>Agente</h2>
+          <label class="check" style="margin-bottom:1em"><input type="checkbox" id="quick-enabled"> Responder automaticamente</label>
+          <p class="muted">Quando ativado, a IA responde às mensagens recebidas. Conversas em atendimento humano ficam pausadas até você reativar.</p>
+          <button class="btn secondary small" data-goto="settings">Editar instruções do agente</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conversas -->
+    <section class="view hidden" id="view-conversations">
+      <div class="chat-layout" id="chat-layout">
+        <div class="card convo-list" id="convo-list"><div class="empty">Ainda não há conversas.</div></div>
+        <div class="card chat-panel" id="chat-panel">
+          <div class="empty" id="chat-empty">Selecione uma conversa.</div>
+          <div id="chat-open" class="hidden" style="display:flex;flex-direction:column;height:100%">
+            <div class="chat-head">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                <button class="btn secondary small back-btn" id="chat-back" aria-label="Voltar">←</button>
+                <div style="min-width:0">
+                  <strong id="chat-name"></strong>
+                  <div class="muted" style="font-size:.85em" id="chat-phone"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span class="pill" id="chat-mode"></span>
+                <button class="btn secondary small" id="chat-toggle"></button>
+                <button class="btn danger small" id="chat-delete" title="Apagar histórico">Apagar</button>
+              </div>
+            </div>
+            <div class="chat-body"><div class="bubbles" id="chat-messages"></div></div>
+            <form class="chat-form" id="chat-form">
+              <textarea id="chat-input" placeholder="Responder como atendente (pausa a IA nesta conversa)" rows="1"></textarea>
+              <button class="btn" type="submit">Enviar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Configurações -->
+    <section class="view hidden" id="view-settings">
+      <form class="card" id="settings-form" style="max-width:760px">
+        <h2>Configurações do agente</h2>
+        <div class="field">
+          <label class="check"><input type="checkbox" name="botEnabled"> Responder automaticamente</label>
+        </div>
+        <div class="field">
+          <label for="s-business">Nome da empresa</label>
+          <input id="s-business" name="businessName" maxlength="120">
+        </div>
+        <div class="field">
+          <label for="s-prompt">Instruções e informações do negócio</label>
+          <textarea id="s-prompt" name="systemPrompt" rows="14"></textarea>
+          <div class="hint">Descreva quem é o agente, o tom das respostas e tudo o que ele precisa saber: serviços, preços, horários, endereço, políticas, perguntas frequentes.</div>
+        </div>
+        <div class="field">
+          <label for="s-handoff">Palavras para chamar um atendente humano</label>
+          <input id="s-handoff" name="handoffKeywords">
+          <div class="hint">Separadas por vírgula. Se o cliente escrever uma delas, a IA pausa nessa conversa.</div>
+        </div>
+        <div class="field">
+          <label for="s-handoff-msg">Mensagem ao transferir para humano</label>
+          <input id="s-handoff-msg" name="handoffMessage">
+        </div>
+        <div class="field">
+          <label for="s-history">Mensagens de histórico enviadas para a IA</label>
+          <input id="s-history" name="historyLimit" type="number" min="1" max="100">
+          <div class="hint">Mais histórico = mais contexto, mas respostas um pouco mais caras.</div>
+        </div>
+        <div class="field">
+          <label for="s-delay">Espera antes de responder (segundos)</label>
+          <input id="s-delay" name="replyDelaySeconds" type="number" min="0" max="60">
+          <div class="hint">Junta várias mensagens seguidas do cliente numa só resposta.</div>
+        </div>
+        <div class="field">
+          <label class="check"><input type="checkbox" name="ignoreGroups"> Ignorar mensagens de grupos</label>
+        </div>
+        <p class="error" id="settings-msg" role="status"></p>
+        <button class="btn" type="submit">Salvar</button>
+      </form>
+    </section>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
