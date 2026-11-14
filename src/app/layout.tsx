@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { publicEnv } from "@/lib/env";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,14 +10,25 @@ const inter = Inter({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "Plataforma de estudo para estudantes de Técnico de Medicina Geral em Moçambique.";
+
 export const metadata: Metadata = {
+  // Base dos links absolutos (partilha em redes sociais, sitemap): o domínio público.
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_SITE_URL),
   title: {
     default: "MEDSTUDY MOZ",
     template: "%s · MEDSTUDY MOZ",
   },
-  description:
-    "Plataforma de estudo para estudantes de Técnico de Medicina Geral em Moçambique.",
+  description: DESCRIPTION,
   applicationName: "MEDSTUDY MOZ",
+  openGraph: {
+    type: "website",
+    locale: "pt_MZ",
+    siteName: "MEDSTUDY MOZ",
+    title: "MEDSTUDY MOZ",
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

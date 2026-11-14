@@ -63,6 +63,12 @@ jobs:
       - name: Testes de ponta a ponta e acessibilidade
         run: npm run test:e2e
 
+      - name: Verificação pós-publicação (smoke) contra a compilação de produção
+        run: |
+          npx next start -p 3000 > /tmp/next.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/api/health > /dev/null && break; sleep 1; done
+          npm run test:smoke -- http://localhost:3000
+
       - name: Guardar capturas de ecrã e relatório
         if: always()
         uses: actions/upload-artifact@v4

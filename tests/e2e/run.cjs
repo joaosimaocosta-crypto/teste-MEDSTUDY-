@@ -96,7 +96,18 @@ function run(cmd, args, env) {
     cwd: ROOT,
     env: { ...env, MANUALS_ALLOWED_HOSTS: "localhost" },
     stdio: ["ignore", "ignore", "inherit"],
+    // Grupo de processos próprio: o "npx" lança o next-server como processo-filho,
+    // e é preciso terminar os dois no fim (senão a porta fica ocupada).
+    detached: process.platform !== "win32",
   });
+  const stopApp = () => {
+    try {
+      if (process.platform === "win32") spawn("taskkill", ["/pid", String(app.pid), "/T", "/F"]);
+      else process.kill(-app.pid, "SIGTERM");
+    } catch {
+      // já terminou
+    }
+  };
   try {
     await waitFor(`http://localhost:${PORT}/api/health`);
     const filters = process.argv.slice(2);
@@ -114,7 +125,7 @@ function run(cmd, args, env) {
     console.log(`\n=== Resumo ===\n${summary.join("\n")}`);
     process.exitCode = summary.some((s) => s.startsWith("FALHOU")) ? 1 : 0;
   } finally {
-    app.kill("SIGTERM");
+    stopApp();
     lunes.close();
   }
 })().catch((e) => {

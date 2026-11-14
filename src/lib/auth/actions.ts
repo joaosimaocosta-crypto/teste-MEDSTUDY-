@@ -6,6 +6,7 @@ import { authErrorMessage } from "@/lib/auth/errors";
 import { ROUTES, safeRedirectPath } from "@/lib/auth/routes";
 import { publicEnv } from "@/lib/env";
 import { LIMITS, RATE_LIMIT_MESSAGE, allow, clientIp } from "@/lib/security/rate-limit";
+import { createAuthClient } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
   forgotPasswordSchema,
@@ -45,7 +46,7 @@ export async function signIn(_prev: FormState, formData: FormData): Promise<Form
     return { error: RATE_LIMIT_MESSAGE, values };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     return { error: authErrorMessage(error), values };
@@ -77,7 +78,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
     return { error: RATE_LIMIT_MESSAGE, values };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
@@ -120,7 +121,7 @@ export async function requestPasswordReset(
     return { error: RATE_LIMIT_MESSAGE, values };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: confirmUrl(ROUTES.newPassword),
   });

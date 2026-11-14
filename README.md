@@ -22,6 +22,15 @@ cp .env.example .env.local   # preencher com os valores reais
 npm run dev                  # http://localhost:3000
 ```
 
+## Publicação
+
+Guia passo a passo (Supabase, Lunes Host, Vercel, domínio, e-mail, verificação):
+**[docs/PUBLICACAO.md](docs/PUBLICACAO.md)**. Depois de publicar:
+
+```bash
+npm run test:smoke -- https://o-seu-dominio.co.mz   # verificação só de leitura
+```
+
 ## Base de dados (Supabase)
 
 As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do esquema.
@@ -177,6 +186,7 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
 | `npm run lint` · `npm run typecheck` | Qualidade do código e tipos |
 | `npm run db:test` | ~140 testes pgTAP: RLS, funções seguras, regras de negócio e **auditoria automática** (RLS em todas as tabelas, `search_path` fixo, funções internas e permissões de `anon`) |
 | `npm run test:e2e` | ~300 verificações de ponta a ponta (Playwright) + acessibilidade (axe-core, WCAG 2.1 AA) em telemóvel e computador, tema claro e escuro |
+| `npm run test:smoke -- <URL>` | Verificação rápida, só de leitura, de um site publicado (saúde, cabeçalhos de segurança, áreas protegidas, 404, robots/sitemap/manifest) |
 
 `npm run test:e2e` exige o Supabase **local** (`npm run db:start`) e `npm run build`. Recusa-se a correr
 se o `.env.local` apontar para outro servidor. Capturas de ecrã ficam em `tests/e2e/.artifacts/`.
@@ -197,11 +207,11 @@ A integração contínua (`.github/workflows/ci.yml`) corre tudo isto em cada pu
 ### Limites do Supabase Auth (importante para produção)
 
 Os pedidos de autenticação partem do **servidor** da plataforma, por isso o Supabase vê todos os
-estudantes com o mesmo IP. Os limites por IP (por omissão: 30 logins/registos e 150 renovações de
-sessão por 5 minutos) passam a ser partilhados pela plataforma inteira. Antes de publicar:
+estudantes com o mesmo IP. Para que os limites contem por estudante:
 
-1. Em **Authentication → Rate Limits**, aumentar os limites de *sign-ins/sign-ups* e *token refresh*
-   para o volume esperado; **ou**
-2. Activar o encaminhamento do IP real do estudante (`Sb-Forwarded-For`, requer a chave secreta e a
-   opção `security_sb_forwarded_for_enabled` na Management API) — ver
-   https://supabase.com/docs/guides/auth/rate-limits (preparado na Fase 12).
+- `SUPABASE_FORWARD_CLIENT_IP=true` + opção `security_sb_forwarded_for_enabled` no projecto: o login,
+  o registo e o pedido de recuperação enviam o IP real no cabeçalho `Sb-Forwarded-For`
+  (`src/lib/supabase/auth.ts`, só no servidor, com a chave secreta);
+- a renovação de sessão (*token refresh*) não é coberta: aumentar esse limite no painel.
+
+Passos completos em [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md#15-limites-de-tentativas-e-ip-real-do-estudante-).

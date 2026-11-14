@@ -16,7 +16,8 @@ export const config = {
      *  - _next/static, _next/image (ficheiros do Next.js)
      *  - favicon e imagens
      *  - api/health (monitorização, não precisa de sessão)
+     *  - robots.txt, sitemap.xml, manifest.webmanifest (públicos, sem sessão)
      */
-    "/((?!_next/static|_next/image|favicon.ico|pdf.worker.min.mjs|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|pdf.worker.min.mjs|api/health|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
