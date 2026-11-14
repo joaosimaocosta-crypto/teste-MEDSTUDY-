@@ -14,8 +14,10 @@ declare
   v_subject uuid;
   v_module uuid;
   v_chapter uuid;
+  v_quiz uuid;
   v_n int;
   v_new int := 0;
+  v_new_quizzes int := 0;
 begin
   select count(*), min(c.id::text)::uuid into v_n, v_course
     from public.courses c where lower(trim(c.title)) = lower('Técnico de medicina geral');
@@ -501,16 +503,43 @@ $md$,
     on conflict (chapter_id, slug) do nothing;
   get diagnostics v_n = row_count; v_new := v_new + v_n;
 
-  raise notice 'Aulas novas importadas: % (de 3 no ficheiro)', v_new;
+  -- Teste: Teste: Fundamentos da anamnese
+  if not exists (select 1 from public.quizzes where chapter_id = v_chapter and title = 'Teste: Fundamentos da anamnese') then
+    insert into public.quizzes (course_id, subject_id, module_id, chapter_id, title, description,
+                                passing_score, shuffle_questions, status, position)
+      values (v_course, v_subject, v_module, v_chapter, 'Teste: Fundamentos da anamnese', '15 perguntas sobre semiologia, estrutura da história clínica e comunicação com o paciente.',
+              60, true, 'published', 1)
+      returning id into v_quiz;
+    insert into public.questions (quiz_id, statement, option_a, option_b, option_c, option_d, correct_option, explanation, position) values
+      (v_quiz, 'O que é a semiologia?', 'O estudo dos medicamentos e das suas doses', 'A disciplina que estuda como investigar, encontrar e interpretar os sinais e sintomas das doenças', 'O conjunto dos exames de laboratório pedidos ao paciente', 'O registo escrito do processo clínico', 'B', 'A semiologia estuda como investigar, encontrar e interpretar os sinais e sintomas através dos quais as doenças se manifestam.', 1),
+      (v_quiz, 'Qual destas afirmações sobre sinais e sintomas está correcta?', 'O sintoma é objectivo e o sinal é subjectivo', 'Sinais e sintomas são a mesma coisa', 'O sintoma é o que o doente sente; o sinal é o que o clínico detecta', 'Os sinais só podem ser detectados com exames de laboratório', 'C', 'Sintoma = manifestação subjectiva (o doente sente). Sinal = achado objectivo (o clínico detecta).', 2),
+      (v_quiz, 'Qual dos seguintes é ao mesmo tempo sintoma e sinal?', 'Mal-estar', 'Anorexia', 'Dor de cabeça', 'Convulsões', 'D', 'Convulsões, sibilância e emagrecimento são sentidos pelo doente e também observáveis pelo clínico.', 3),
+      (v_quiz, 'Febre, mal-estar, anorexia e emagrecimento são exemplos de sintomas:', 'Constitucionais', 'Cardinais', 'Remitentes', 'Iniciais', 'A', 'Os sintomas constitucionais são gerais e afectam o corpo inteiro, não só um aparelho.', 4),
+      (v_quiz, 'Um sintoma é considerado crónico quando está presente há mais de:', '2 dias', '2 semanas', '2 meses', '6 meses', 'B', 'Sintomas crónicos estão constantemente presentes há mais de 2 semanas.', 5),
+      (v_quiz, 'A história clínica é constituída por:', 'Anamnese e exames de laboratório', 'Exame físico e tratamento', 'Anamnese e exame físico', 'Queixa principal e diagnóstico', 'C', 'Neste curso, história clínica = anamnese + exame físico.', 6),
+      (v_quiz, 'Em que situação o exame físico deve ser feito ANTES da anamnese?', 'Quando o paciente é uma criança acompanhada pela mãe', 'Quando o paciente está inconsciente ou não consegue comunicar', 'Quando o paciente tem febre', 'Sempre que o paciente é idoso', 'B', 'Normalmente a anamnese vem primeiro; a excepção é o paciente inconsciente ou incapaz de comunicar.', 7),
+      (v_quiz, 'O processo de decidir, entre várias hipóteses diagnósticas, qual é a mais provável chama-se:', 'Diagnóstico diferencial', 'Semiotécnica', 'Revisão de sistemas', 'Quadro clínico', 'A', 'O diagnóstico diferencial avalia a lista de hipóteses para identificar a mais provável.', 8),
+      (v_quiz, 'Qual é a ordem correcta dos primeiros componentes da anamnese abrangente?', 'Queixa principal → Apresentação → Identificação → HDA', 'Identificação → HDA → Apresentação → Queixa principal', 'HDA → Queixa principal → Identificação → Apresentação', 'Apresentação → Identificação → Queixa principal → HDA', 'D', 'Apresentação → Identificação → Queixa principal → HDA → História pregressa → Familiar → Pessoal/social → Revisão de sistemas.', 9),
+      (v_quiz, 'Como deve ser registada a queixa principal no processo clínico?', 'Com termos médicos escolhidos pelo clínico', 'Entre aspas, com as palavras do próprio paciente', 'Apenas com o diagnóstico provável', 'Não é necessário registar a queixa principal', 'B', 'A queixa principal escreve-se entre aspas, nas palavras do paciente. Ex.: "tenho tosse há 3 semanas".', 10),
+      (v_quiz, 'Qual destes NÃO faz parte das condições básicas para uma boa anamnese?', 'Privacidade, com a porta da sala fechada', 'Tempo suficiente para a entrevista', 'Usar muitos termos médicos para mostrar competência', 'Garantir a confidencialidade', 'C', 'Deve usar palavras simples que o paciente entenda e evitar termos médicos.', 11),
+      (v_quiz, 'No início da entrevista, que tipo de pergunta é mais adequado?', 'Perguntas abertas, como "Fale-me da sua preocupação"', 'Perguntas de sim ou não', 'Perguntas sobre os antecedentes familiares', 'Perguntas sobre o rendimento da família', 'A', 'Começa-se com perguntas abertas; as perguntas directas vêm depois de o paciente contar a sua história.', 12),
+      (v_quiz, 'Sentar-se ao nível dos olhos do paciente e acenar com a cabeça é um exemplo de:', 'Técnica verbal', 'Resumo da entrevista', 'Revisão de sistemas', 'Técnica não verbal de encorajamento', 'D', 'A postura, o olhar e os acenos encorajam o paciente a continuar: são técnicas não verbais.', 13),
+      (v_quiz, 'Uma criança vem à consulta com a tia. Qual é a conduta correcta?', 'Falar só com a tia, porque a criança é menor', 'Registar a fonte ("anamnese colhida através da tia") e ouvir também a criança, se ela puder falar', 'Não fazer anamnese e passar directamente ao exame físico', 'Pedir que volte com a mãe', 'B', 'Regista-se a fonte da anamnese e, sempre que o paciente pode participar, é obrigatório ouvi-lo, mesmo que seja menor.', 14),
+      (v_quiz, 'Numa emergência, qual destas informações é INDISPENSÁVEL perguntar?', 'A escolaridade do paciente', 'A história de vacinas da infância', 'As alergias a medicamentos', 'As viagens dos últimos anos', 'C', 'No mínimo: identificação, queixa principal, história relacionada com o evento, doenças crónicas, tratamentos em curso e alergias a medicamentos.', 15);
+    v_new_quizzes := v_new_quizzes + 1;
+  end if;
+
+  raise notice 'Aulas novas: % (de 3) · Testes novos: % (de 1)', v_new, v_new_quizzes;
 end
 $import$;
 
 -- Verificação: módulos, capítulos e aulas desta disciplina
-select m.position as mod, m.title as modulo, c.position as cap, c.title as capitulo, count(l.id) as aulas
+select m.position as mod, m.title as modulo, c.position as cap, c.title as capitulo, count(distinct l.id) as aulas,
+       (select count(*) from public.quizzes q where q.chapter_id = c.id) as testes
   from public.modules m
   join public.subjects s on s.id = m.subject_id
   join public.courses co on co.id = s.course_id
   left join public.chapters c on c.module_id = m.id
   left join public.lessons l on l.chapter_id = c.id
  where lower(trim(co.title)) = lower('Técnico de medicina geral') and lower(trim(s.title)) = lower('Semiologia')
- group by 1, 2, 3, 4 order by 1, 3;
+ group by 1, 2, 3, 4, c.id order by 1, 3;

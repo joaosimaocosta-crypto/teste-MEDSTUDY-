@@ -1,0 +1,149 @@
+{
+  "title": "Teste: Fundamentos da anamnese",
+  "description": "15 perguntas sobre semiologia, estrutura da história clínica e comunicação com o paciente.",
+  "passing_score": 60,
+  "shuffle_questions": true,
+  "status": "published",
+  "questions": [
+    {
+      "statement": "O que é a semiologia?",
+      "options": [
+        "O estudo dos medicamentos e das suas doses",
+        "A disciplina que estuda como investigar, encontrar e interpretar os sinais e sintomas das doenças",
+        "O conjunto dos exames de laboratório pedidos ao paciente",
+        "O registo escrito do processo clínico"
+      ],
+      "correct": "B",
+      "explanation": "A semiologia estuda como investigar, encontrar e interpretar os sinais e sintomas através dos quais as doenças se manifestam."
+    },
+    {
+      "statement": "Qual destas afirmações sobre sinais e sintomas está correcta?",
+      "options": [
+        "O sintoma é objectivo e o sinal é subjectivo",
+        "Sinais e sintomas são a mesma coisa",
+        "O sintoma é o que o doente sente; o sinal é o que o clínico detecta",
+        "Os sinais só podem ser detectados com exames de laboratório"
+      ],
+      "correct": "C",
+      "explanation": "Sintoma = manifestação subjectiva (o doente sente). Sinal = achado objectivo (o clínico detecta)."
+    },
+    {
+      "statement": "Qual dos seguintes é ao mesmo tempo sintoma e sinal?",
+      "options": ["Mal-estar", "Anorexia", "Dor de cabeça", "Convulsões"],
+      "correct": "D",
+      "explanation": "Convulsões, sibilância e emagrecimento são sentidos pelo doente e também observáveis pelo clínico."
+    },
+    {
+      "statement": "Febre, mal-estar, anorexia e emagrecimento são exemplos de sintomas:",
+      "options": ["Constitucionais", "Cardinais", "Remitentes", "Iniciais"],
+      "correct": "A",
+      "explanation": "Os sintomas constitucionais são gerais e afectam o corpo inteiro, não só um aparelho."
+    },
+    {
+      "statement": "Um sintoma é considerado crónico quando está presente há mais de:",
+      "options": ["2 dias", "2 semanas", "2 meses", "6 meses"],
+      "correct": "B",
+      "explanation": "Sintomas crónicos estão constantemente presentes há mais de 2 semanas."
+    },
+    {
+      "statement": "A história clínica é constituída por:",
+      "options": [
+        "Anamnese e exames de laboratório",
+        "Exame físico e tratamento",
+        "Anamnese e exame físico",
+        "Queixa principal e diagnóstico"
+      ],
+      "correct": "C",
+      "explanation": "Neste curso, história clínica = anamnese + exame físico."
+    },
+    {
+      "statement": "Em que situação o exame físico deve ser feito ANTES da anamnese?",
+      "options": [
+        "Quando o paciente é uma criança acompanhada pela mãe",
+        "Quando o paciente está inconsciente ou não consegue comunicar",
+        "Quando o paciente tem febre",
+        "Sempre que o paciente é idoso"
+      ],
+      "correct": "B",
+      "explanation": "Normalmente a anamnese vem primeiro; a excepção é o paciente inconsciente ou incapaz de comunicar."
+    },
+    {
+      "statement": "O processo de decidir, entre várias hipóteses diagnósticas, qual é a mais provável chama-se:",
+      "options": ["Diagnóstico diferencial", "Semiotécnica", "Revisão de sistemas", "Quadro clínico"],
+      "correct": "A",
+      "explanation": "O diagnóstico diferencial avalia a lista de hipóteses para identificar a mais provável."
+    },
+    {
+      "statement": "Qual é a ordem correcta dos primeiros componentes da anamnese abrangente?",
+      "options": [
+        "Queixa principal → Apresentação → Identificação → HDA",
+        "Identificação → HDA → Apresentação → Queixa principal",
+        "HDA → Queixa principal → Identificação → Apresentação",
+        "Apresentação → Identificação → Queixa principal → HDA"
+      ],
+      "correct": "D",
+      "explanation": "Apresentação → Identificação → Queixa principal → HDA → História pregressa → Familiar → Pessoal/social → Revisão de sistemas."
+    },
+    {
+      "statement": "Como deve ser registada a queixa principal no processo clínico?",
+      "options": [
+        "Com termos médicos escolhidos pelo clínico",
+        "Entre aspas, com as palavras do próprio paciente",
+        "Apenas com o diagnóstico provável",
+        "Não é necessário registar a queixa principal"
+      ],
+      "correct": "B",
+      "explanation": "A queixa principal escreve-se entre aspas, nas palavras do paciente. Ex.: \"tenho tosse há 3 semanas\"."
+    },
+    {
+      "statement": "Qual destes NÃO faz parte das condições básicas para uma boa anamnese?",
+      "options": [
+        "Privacidade, com a porta da sala fechada",
+        "Tempo suficiente para a entrevista",
+        "Usar muitos termos médicos para mostrar competência",
+        "Garantir a confidencialidade"
+      ],
+      "correct": "C",
+      "explanation": "Deve usar palavras simples que o paciente entenda e evitar termos médicos."
+    },
+    {
+      "statement": "No início da entrevista, que tipo de pergunta é mais adequado?",
+      "options": [
+        "Perguntas abertas, como \"Fale-me da sua preocupação\"",
+        "Perguntas de sim ou não",
+        "Perguntas sobre os antecedentes familiares",
+        "Perguntas sobre o rendimento da família"
+      ],
+      "correct": "A",
+      "explanation": "Começa-se com perguntas abertas; as perguntas directas vêm depois de o paciente contar a sua história."
+    },
+    {
+      "statement": "Sentar-se ao nível dos olhos do paciente e acenar com a cabeça é um exemplo de:",
+      "options": ["Técnica verbal", "Resumo da entrevista", "Revisão de sistemas", "Técnica não verbal de encorajamento"],
+      "correct": "D",
+      "explanation": "A postura, o olhar e os acenos encorajam o paciente a continuar: são técnicas não verbais."
+    },
+    {
+      "statement": "Uma criança vem à consulta com a tia. Qual é a conduta correcta?",
+      "options": [
+        "Falar só com a tia, porque a criança é menor",
+        "Registar a fonte (\"anamnese colhida através da tia\") e ouvir também a criança, se ela puder falar",
+        "Não fazer anamnese e passar directamente ao exame físico",
+        "Pedir que volte com a mãe"
+      ],
+      "correct": "B",
+      "explanation": "Regista-se a fonte da anamnese e, sempre que o paciente pode participar, é obrigatório ouvi-lo, mesmo que seja menor."
+    },
+    {
+      "statement": "Numa emergência, qual destas informações é INDISPENSÁVEL perguntar?",
+      "options": [
+        "A escolaridade do paciente",
+        "A história de vacinas da infância",
+        "As alergias a medicamentos",
+        "As viagens dos últimos anos"
+      ],
+      "correct": "C",
+      "explanation": "No mínimo: identificação, queixa principal, história relacionada com o evento, doenças crónicas, tratamentos em curso e alergias a medicamentos."
+    }
+  ]
+}
