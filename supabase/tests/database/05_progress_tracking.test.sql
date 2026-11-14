@@ -23,17 +23,17 @@ select public.touch_lesson('50000000-0000-0000-0000-000000000001');
 select public.touch_lesson('50000000-0000-0000-0000-000000000002');
 select public.set_lesson_completed('50000000-0000-0000-0000-000000000001', true);
 select is(
-  (select lessons_viewed || '|' || lessons_completed from public.student_activity_days where day = public._maputo_day(now())),
+  (select lessons_viewed || '|' || lessons_completed from public.student_activity_days where day = (now() at time zone 'Africa/Maputo')::date),
   '2|1', 'Abrir 2 aulas e concluir uma regista a actividade do dia (concluir não conta como visita)'
 );
 select public.set_lesson_completed('50000000-0000-0000-0000-000000000001', true);
 select is(
-  (select lessons_completed from public.student_activity_days where day = public._maputo_day(now())),
+  (select lessons_completed from public.student_activity_days where day = (now() at time zone 'Africa/Maputo')::date),
   1, 'Marcar de novo como concluída não conta duas vezes'
 );
 select public.submit_quiz_attempt((public.start_quiz_attempt('70000000-0000-0000-0000-000000000001')).id, '{}'::jsonb);
 select is(
-  (select quizzes_submitted from public.student_activity_days where day = public._maputo_day(now())),
+  (select quizzes_submitted from public.student_activity_days where day = (now() at time zone 'Africa/Maputo')::date),
   1, 'Submeter um teste conta na actividade do dia'
 );
 

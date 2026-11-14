@@ -17,7 +17,9 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:lint": "supabase db lint --level warning",
-    "db:types": "supabase gen types typescript --local > .types.tmp && mv .types.tmp src/types/database.ts || (rm -f .types.tmp && exit 1)"
+    "db:types": "supabase gen types typescript --local > .types.tmp && mv .types.tmp src/types/database.ts || (rm -f .types.tmp && exit 1)",
+    "test:e2e": "node tests/e2e/run.cjs",
+    "test:db": "supabase test db"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -40,8 +42,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "^4.13.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "playwright": "1.63.0",
     "supabase": "^3.1.0",
     "tailwindcss": "4.3.3",
     "typescript": "^5"

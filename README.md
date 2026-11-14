@@ -37,6 +37,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0700_quiz_catalog.sql` | Catálogo de testes (nº de perguntas, tentativas, melhor nota) |
 | `…0800_progress_tracking.sql` | Actividade diária (triggers), progresso por disciplina, estatísticas por pergunta |
 | `…0900_subscriptions_management.sql` | Definições (instruções de pagamento), gestão de assinaturas e pagamentos, expiração diária (pg_cron) |
+| `…1000_quiz_snapshot.sql` | Cópia fixa das perguntas em cada tentativa (histórico estável) |
 
 ### Ambiente local (requer Docker)
 
@@ -169,8 +170,37 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
     com activação/renovação na mesma transacção; anular pagamentos.
 - Não há gateway de pagamento nesta versão.
 
+## Testes
+
+| Comando | O que verifica |
+|---|---|
+| `npm run lint` · `npm run typecheck` | Qualidade do código e tipos |
+| `npm run db:test` | 140+ testes pgTAP: RLS, funções seguras, regras de negócio e **auditoria automática** (RLS em todas as tabelas, `search_path` fixo, funções internas e permissões de `anon`) |
+| `npm run test:e2e` | ~300 verificações de ponta a ponta (Playwright) + acessibilidade (axe-core, WCAG 2.1 AA) em telemóvel e computador, tema claro e escuro |
+
+`npm run test:e2e` exige o Supabase **local** (`npm run db:start`) e `npm run build`. Recusa-se a correr
+se o `.env.local` apontar para outro servidor. Capturas de ecrã ficam em `tests/e2e/.artifacts/`.
+A integração contínua (`.github/workflows/ci.yml`) corre tudo isto em cada push.
+
 ## Segurança
 
-- Nunca fazer commit de `.env.local`.
-- A chave `SUPABASE_SECRET_KEY` é usada apenas no servidor (`src/lib/supabase/admin.ts`).
-- RLS activo em todas as tabelas; os estudantes nunca lêem as respostas correctas nem o endereço dos PDFs.
+- Nunca fazer commit de `.env.local`. A chave `SUPABASE_SECRET_KEY` só existe no servidor
+  (`src/lib/supabase/admin.ts`); o CI verifica que não aparece no código do browser.
+- RLS activo em todas as tabelas; estudantes nunca lêem respostas certas, a cópia das perguntas
+  nem o endereço dos PDFs (privilégios por coluna + funções seguras).
+- Cada página de administração usa `<AdminOnly>` e cada acção chama `requireAdmin()`/`requireUser()`.
+- Cabeçalhos HTTP (`next.config.ts`): CSP, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`,
+  `Permissions-Policy`, `COOP` e HSTS (em https).
+- Limite de tentativas na aplicação (login, registo, recuperação de senha) por IP e por e-mail.
+
+### Limites do Supabase Auth (importante para produção)
+
+Os pedidos de autenticação partem do **servidor** da plataforma, por isso o Supabase vê todos os
+estudantes com o mesmo IP. Os limites por IP (por omissão: 30 logins/registos e 150 renovações de
+sessão por 5 minutos) passam a ser partilhados pela plataforma inteira. Antes de publicar:
+
+1. Em **Authentication → Rate Limits**, aumentar os limites de *sign-ins/sign-ups* e *token refresh*
+   para o volume esperado; **ou**
+2. Activar o encaminhamento do IP real do estudante (`Sb-Forwarded-For`, requer a chave secreta e a
+   opção `security_sb_forwarded_for_enabled` na Management API) — ver
+   https://supabase.com/docs/guides/auth/rate-limits (preparado na Fase 12).

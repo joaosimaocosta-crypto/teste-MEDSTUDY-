@@ -5,6 +5,7 @@ import { z } from "zod";
 import { authErrorMessage } from "@/lib/auth/errors";
 import { ROUTES, safeRedirectPath } from "@/lib/auth/routes";
 import { publicEnv } from "@/lib/env";
+import { LIMITS, RATE_LIMIT_MESSAGE, allow, clientIp } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
   forgotPasswordSchema,
@@ -40,6 +41,9 @@ export async function signIn(_prev: FormState, formData: FormData): Promise<Form
   if (!parsed.success) {
     return { fieldErrors: fieldErrors(parsed.error), values };
   }
+  if (!allow(LIMITS.login(await clientIp(), parsed.data.email))) {
+    return { error: RATE_LIMIT_MESSAGE, values };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
@@ -68,6 +72,9 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
   });
   if (!parsed.success) {
     return { fieldErrors: fieldErrors(parsed.error), values };
+  }
+  if (!allow(LIMITS.register(await clientIp()))) {
+    return { error: RATE_LIMIT_MESSAGE, values };
   }
 
   const supabase = await createClient();
@@ -108,6 +115,9 @@ export async function requestPasswordReset(
   const parsed = forgotPasswordSchema.safeParse({ email: formData.get("email") });
   if (!parsed.success) {
     return { fieldErrors: fieldErrors(parsed.error), values };
+  }
+  if (!allow(LIMITS.reset(await clientIp(), parsed.data.email))) {
+    return { error: RATE_LIMIT_MESSAGE, values };
   }
 
   const supabase = await createClient();
