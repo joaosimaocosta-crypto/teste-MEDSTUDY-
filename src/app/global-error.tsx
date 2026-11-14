@@ -26,7 +26,7 @@ export default function GlobalError({ retry }: { error: unknown; retry: () => vo
           <p style={{ opacity: 0.75, marginBottom: 20 }}>Ocorreu um erro inesperado. Tente novamente dentro de instantes.</p>
           <button
             onClick={() => retry()}
-            style={{ padding: "12px 20px", borderRadius: 12, border: 0, background: "#0d9488", color: "#fff", fontWeight: 600, fontSize: 16 }}
+            style={{ padding: "12px 20px", borderRadius: 12, border: 0, background: "#0f766e", color: "#fff", fontWeight: 600, fontSize: 16 }}
           >
             Tentar novamente
           </button>

@@ -73,6 +73,12 @@ function run(cmd, args, env) {
     console.error("Recusado: os testes só correm contra o Supabase LOCAL (.env.local aponta para outro servidor).");
     process.exit(1);
   }
+  // Se já houver algo na porta, os testes correriam contra uma versão antiga da app.
+  const busy = await fetch(`http://localhost:${PORT}`).then(() => true).catch(() => false);
+  if (busy) {
+    console.error(`A porta ${PORT} já está ocupada (outro servidor a correr?). Pare-o antes de executar os testes.`);
+    process.exit(1);
+  }
   await prepareFixtures();
   const lunes = await startLunesServer(TMP, 8443);
 

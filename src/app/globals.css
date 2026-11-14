@@ -16,22 +16,23 @@
   --muted-foreground: #5b6b7c;
   --border: #dde5ec;
 
-  --primary: #0d9488; /* teal-600 — saúde */
+  /* teal-700: contraste 5,5:1 com branco (WCAG AA, texto e botões) */
+  --primary: #0f766e;
   --primary-foreground: #ffffff;
   --secondary: #1d4ed8; /* blue-700 — educação */
   --secondary-foreground: #ffffff;
   --accent: #e6f6f4;
   --accent-foreground: #0f766e;
 
-  --success: #16a34a;
-  --warning: #d97706;
+  --success: #166534; /* contraste ≥ 4,5:1 também sobre fundos verdes claros */
+  --warning: #b45309;
   --danger: #dc2626;
 
   --ring: #14b8a6;
   --radius: 0.875rem;
 
   /* Gráficos (validados com o validador de paleta: luminosidade e contraste) */
-  --chart-1: #0d9488;
+  --chart-1: #0f766e;
   --chart-track: #d5f5ef;
   /* Escala sequencial do mapa de actividade (validada: monotónica, contraste ≥ 2:1) */
   --heat-1: #5ec4b6;
