@@ -90,7 +90,7 @@ export default function Home() {
         <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pt-16 lg:grid-cols-2 lg:gap-12 lg:pb-20">
           <div className="flex flex-col gap-5">
             <span className="w-fit rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-              Técnico de Medicina Geral · Moçambique
+              Cursos de Saúde · Moçambique
             </span>
             <h1 className="text-[2rem] font-bold leading-tight tracking-tight sm:text-5xl">
               Estude com organização.{" "}
@@ -98,7 +98,7 @@ export default function Home() {
             </h1>
             <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
               Aulas estruturadas, manuais oficiais e testes com correcção automática — tudo o que
-              precisa para o curso de Técnico de Medicina Geral, no seu telemóvel.
+              precisa para o curso de Saúde, no seu telemóvel.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link href={ROUTES.register} className={buttonClasses({ size: "lg" })}>

@@ -9,7 +9,7 @@ export default function RegisterPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">Criar conta</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Registe-se para aceder aos conteúdos do curso de Técnico de Medicina Geral.
+          Registe-se para aceder aos conteúdos dos cursos de Saúde.
         </p>
       </div>
       <RegisterForm />

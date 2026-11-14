@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 const DESCRIPTION =
-  "Plataforma de estudo para estudantes de Técnico de Medicina Geral em Moçambique.";
+  "Plataforma de estudo para estudantes dos cursos de Saúde em Moçambique.";
 
 export const metadata: Metadata = {
   // Base dos links absolutos (partilha em redes sociais, sitemap): o domínio público.

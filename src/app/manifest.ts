@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "MEDSTUDY MOZ",
     short_name: "MEDSTUDY",
-    description: "Plataforma de estudo para estudantes de Técnico de Medicina Geral em Moçambique.",
+    description: "Plataforma de estudo para estudantes dos cursos de Saúde em Moçambique.",
     lang: "pt",
     start_url: "/painel",
     display: "standalone",
