@@ -1,0 +1,12 @@
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; color: #0f172a;">
+  <h2 style="color: #0f766e;">MEDSTUDY MOZ</h2>
+  <p>Olá,</p>
+  <p>Recebemos um pedido para redefinir a senha da sua conta. Clique no botão abaixo para escolher uma nova senha:</p>
+  <p style="margin: 28px 0;">
+    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/nova-senha"
+       style="background: #0f766e; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold;">
+      Redefinir senha
+    </a>
+  </p>
+  <p style="font-size: 13px; color: #5b6b7c;">O link expira dentro de 1 hora. Se não pediu esta alteração, ignore esta mensagem — a sua senha continua a mesma.</p>
+</div>
