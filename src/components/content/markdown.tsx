@@ -35,8 +35,10 @@ const components: Components = {
       <table className="w-full text-left text-sm" {...p} />
     </div>
   ),
-  th: (p) => <th className="border-b border-border bg-muted px-3 py-2 font-semibold" {...p} />,
-  td: (p) => <td className="border-b border-border px-3 py-2 align-top" {...p} />,
+  // Nas tabelas, as palavras não são partidas a meio (no telemóvel a tabela desliza na horizontal
+  // se precisar); a translineação automática (hífen) usa as regras do português (lang="pt").
+  th: (p) => <th className="border-b border-border bg-muted px-3 py-2 font-semibold hyphens-auto [overflow-wrap:normal]" {...p} />,
+  td: (p) => <td className="border-b border-border px-3 py-2 align-top hyphens-auto [overflow-wrap:normal]" {...p} />,
   img: ({ alt, src }) =>
     typeof src === "string" && src.startsWith("https://") ? (
       // eslint-disable-next-line @next/next/no-img-element -- imagens externas de conteúdo
