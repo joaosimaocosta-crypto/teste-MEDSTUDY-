@@ -16,6 +16,8 @@ import { formatMZN, shortDate, shortDateTime } from "@/lib/format";
 import { getStudentDetail } from "@/lib/services/admin";
 import { formatMinutes } from "@/lib/progress";
 import { SUBSCRIPTION_STATUS } from "@/lib/subscriptions";
+import { AssignPlanForm, SubscriptionActions } from "@/components/features/subscriptions/admin-forms";
+import { getAssignOptions } from "@/lib/services/subscriptions";
 import { RoleControl } from "../role-control";
 
 export const metadata: Metadata = { title: "Ficha do estudante · Administração" };
@@ -55,7 +57,7 @@ async function StudentDetail({ params }: { params: PageProps<"/admin/estudantes/
   // Validar o parâmetro do URL antes de o enviar para a base de dados.
   if (!z.guid().safeParse(id).success) notFound();
 
-  const [detail, me] = await Promise.all([getStudentDetail(id), getCurrentUser()]);
+  const [detail, me, plans] = await Promise.all([getStudentDetail(id), getCurrentUser(), getAssignOptions()]);
   if (!detail) notFound();
 
   const { profile, subscriptions, payments, attempts, summary, subjects, streaks, heatmap } = detail;
@@ -135,29 +137,43 @@ async function StudentDetail({ params }: { params: PageProps<"/admin/estudantes/
       </div>
 
       <Card>
-        <CardHeader title="Assinaturas" description="A gestão (activar, suspender, renovar) chega na Fase 10." />
+        <CardHeader
+          title="Assinaturas"
+          action={
+            <Link href={`/admin/pagamentos?email=${encodeURIComponent(profile.email ?? "")}`} className="text-sm font-medium text-primary hover:underline">
+              Registar pagamento
+            </Link>
+          }
+        />
         {subscriptions.length === 0 ? (
-          <EmptyState icon={CreditCard} title="Sem assinaturas" />
+          <p className="mb-4 text-sm text-muted-foreground">Sem assinaturas.</p>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className="mb-4 divide-y divide-border">
             {subscriptions.map((s) => {
               const st = SUBSCRIPTION_STATUS[s.effective];
               return (
-                <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0">
-                  <div>
-                    <p className="text-sm font-medium">{s.plan?.name ?? "—"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {s.starts_at && s.expires_at
-                        ? `${shortDate(s.starts_at)} → ${shortDate(s.expires_at)}`
-                        : `Pedido em ${shortDate(s.created_at)}`}
-                    </p>
+                <li key={s.id} className="flex flex-col gap-2 py-3 first:pt-0">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium">{s.plan?.name ?? "—"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {s.starts_at && s.expires_at
+                          ? `${shortDate(s.starts_at)} → ${shortDate(s.expires_at)}`
+                          : `Pedido em ${shortDate(s.created_at)}`}
+                      </p>
+                      {s.notes && <p className="whitespace-pre-wrap text-xs text-muted-foreground">Notas: {s.notes}</p>}
+                    </div>
+                    <Badge tone={st.tone}>{st.label}</Badge>
                   </div>
-                  <Badge tone={st.tone}>{st.label}</Badge>
+                  <SubscriptionActions id={s.id} status={s.effective} />
                 </li>
               );
             })}
           </ul>
         )}
+        <div className="border-t border-border pt-4">
+          <AssignPlanForm userId={profile.id} plans={plans.map((p) => ({ ...p, price_mzn: Number(p.price_mzn) }))} />
+        </div>
       </Card>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">

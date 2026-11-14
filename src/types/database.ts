@@ -23,7 +23,27 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "chapters": {
+            "app_settings": {
+                  Row: {
+                    "id": boolean,"payment_instructions": string | null,"support_contact": string | null,"updated_at": string,"updated_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: boolean,"payment_instructions"?: string | null,"support_contact"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Update: {
+                    "id"?: boolean,"payment_instructions"?: string | null,"support_contact"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "app_settings_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"chapters": {
                   Row: {
                     "created_at": string,"description": string | null,"id": string,"module_id": string,"position": number,"slug": string,"status": Database["public"]['Enums']["publication_status"],"title": string,"updated_at": string
                   }
@@ -433,7 +453,13 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "_grade_attempt":
+            "_assert_admin":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
+"_current_paid_until":
+{ Args: { "p_exclude": string,"p_user_id": string }; Returns: string
+                           },
+"_grade_attempt":
 { Args: { "p_answers": Json,"p_attempt_id": string,"p_status": Database["public"]['Enums']["quiz_attempt_status"] }; Returns: {
               "answers": NonNullable<Json>,
 "created_at": string,
@@ -471,16 +497,133 @@ isOneToOne: false
               "completed_lessons": number,"completed_minutes": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
             }[]
                            },
+"admin_activate_subscription":
+{ Args: { "p_starts_at"?: string,"p_subscription_id": string }; Returns: {
+              "activated_by": string | null,
+"created_at": string,
+"expires_at": string | null,
+"id": string,
+"notes": string | null,
+"plan_id": string,
+"starts_at": string | null,
+"status": Database["public"]['Enums']["subscription_status"],
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "subscriptions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"admin_assign_subscription":
+{ Args: { "p_activate"?: boolean,"p_plan_id": string,"p_user_id": string }; Returns: {
+              "activated_by": string | null,
+"created_at": string,
+"expires_at": string | null,
+"id": string,
+"notes": string | null,
+"plan_id": string,
+"starts_at": string | null,
+"status": Database["public"]['Enums']["subscription_status"],
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "subscriptions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "admin_question_stats":
 { Args: { "p_quiz_id": string }; Returns: {
               "answered": number,"correct": number,"correct_rate": number,"question_id": string
             }[]
                            },
+"admin_reactivate_subscription":
+{ Args: { "p_subscription_id": string }; Returns: {
+              "activated_by": string | null,
+"created_at": string,
+"expires_at": string | null,
+"id": string,
+"notes": string | null,
+"plan_id": string,
+"starts_at": string | null,
+"status": Database["public"]['Enums']["subscription_status"],
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "subscriptions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"admin_record_payment":
+{ Args: { "p_amount_mzn": number,"p_apply"?: boolean,"p_method": Database["public"]['Enums']["payment_method"],"p_notes"?: string,"p_paid_at": string,"p_plan_id": string,"p_reference": string,"p_subscription_id"?: string,"p_user_id": string }; Returns: {
+              "amount_mzn": number,
+"created_at": string,
+"id": string,
+"method": Database["public"]['Enums']["payment_method"],
+"notes": string | null,
+"paid_at": string | null,
+"plan_id": string | null,
+"recorded_by": string | null,
+"reference": string | null,
+"status": Database["public"]['Enums']["payment_status"],
+"subscription_id": string | null,
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "payments"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"admin_renew_subscription":
+{ Args: { "p_subscription_id": string }; Returns: {
+              "activated_by": string | null,
+"created_at": string,
+"expires_at": string | null,
+"id": string,
+"notes": string | null,
+"plan_id": string,
+"starts_at": string | null,
+"status": Database["public"]['Enums']["subscription_status"],
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "subscriptions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "admin_student_subject_progress":
 { Args: { "p_user_id": string }; Returns: {
               "completed_lessons": number,"completed_minutes": number,"course_id": string,"course_title": string,"subject_id": string,"subject_title": string,"total_lessons": number
             }[]
                            },
+"admin_suspend_subscription":
+{ Args: { "p_reason"?: string,"p_subscription_id": string }; Returns: {
+              "activated_by": string | null,
+"created_at": string,
+"expires_at": string | null,
+"id": string,
+"notes": string | null,
+"plan_id": string,
+"starts_at": string | null,
+"status": Database["public"]['Enums']["subscription_status"],
+"updated_at": string,
+"user_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "subscriptions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "can_access_lesson":
 { Args: { "p_lesson_id": string }; Returns: boolean
                            },

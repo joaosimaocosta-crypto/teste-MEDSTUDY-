@@ -36,6 +36,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0600_course_navigation.sql` | Índice das disciplinas, contexto das aulas, registo de progresso |
 | `…0700_quiz_catalog.sql` | Catálogo de testes (nº de perguntas, tentativas, melhor nota) |
 | `…0800_progress_tracking.sql` | Actividade diária (triggers), progresso por disciplina, estatísticas por pergunta |
+| `…0900_subscriptions_management.sql` | Definições (instruções de pagamento), gestão de assinaturas e pagamentos, expiração diária (pg_cron) |
 
 ### Ambiente local (requer Docker)
 
@@ -152,6 +153,21 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
   sequência de dias, mapa de actividade (12 semanas), evolução das notas, progresso por disciplina.
 - Administração: actividade e progresso na ficha do estudante, taxa de acerto por pergunta,
   testes com mais dificuldade na visão geral.
+
+## Assinaturas e pagamentos
+
+- Estados: **pendente → activa → expirada**, ou **suspensa**. O acesso depende sempre da data
+  (`has_course_access`); a tarefa diária `medstudy-expirar-assinaturas` (pg_cron, 00:05 em Maputo)
+  mantém o estado coerente.
+- Estudante em `/assinatura`: escolhe um plano (pedido pendente, com referência do pagamento),
+  vê as instruções de pagamento, o estado, a validade e o histórico.
+- Administração:
+  - `/admin/planos` — planos (preço em MZN, duração, benefícios, acesso a todos ou a um curso)
+    e **instruções de pagamento** (editáveis; nunca são inventados números de conta);
+  - `/admin/assinaturas` — activar, renovar (soma dias ao fim da validade), suspender, levantar suspensão;
+  - `/admin/pagamentos` — registo manual (M-Pesa, e-Mola, mKesh, transferência, numerário),
+    com activação/renovação na mesma transacção; anular pagamentos.
+- Não há gateway de pagamento nesta versão.
 
 ## Segurança
 
