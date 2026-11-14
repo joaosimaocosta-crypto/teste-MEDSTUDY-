@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "npm install --omit=dev --no-audit --no-fund && node app.js",
     "check": "node --check app.js && node --check src/server.mjs"
   },
   "dependencies": {

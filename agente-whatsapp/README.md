@@ -43,7 +43,7 @@ Abra <http://localhost:3000/admin>, entre com a senha e leia o QR code no celula
 
 Este é o caminho recomendado: o servidor fica ligado o tempo todo.
 
-1. **Startup**: em *Docker Image*, escolha Node.js **20 ou superior**. Em *MAIN FILE* (ou *JS file*), coloque `app.js`.
+1. **Startup**: em *Docker Image*, escolha Node.js **20 ou superior**. Em *STARTUP COMMAND*, coloque `npm start` (instala as dependências e inicia o `app.js`; não use `&&` nesse campo, pois a Lunes não o interpreta).
 2. **Files**: envie o `.zip` do projeto, clique nos três pontinhos › **Unarchive**. Os arquivos (`app.js`, `package.json`, `src/`, `public/`) devem ficar direto na pasta principal (`/home/container`).
 3. Ainda em **Files**, crie um arquivo chamado `.env` com:
    ```
