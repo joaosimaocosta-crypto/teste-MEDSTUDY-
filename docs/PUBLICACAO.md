@@ -27,7 +27,22 @@ Guia passo a passo para pôr a plataforma online, na ordem recomendada:
 4. Plano: para uso comercial recomenda-se um plano pago. No plano gratuito o projecto é
    **pausado após um período sem actividade** e não há cópias de segurança diárias.
 
-### 1.2 Aplicar as migrações (no seu computador)
+### 1.2 Criar as tabelas
+
+**Opção A — sem terminal (ex.: no telemóvel), pelo SQL Editor** 🔑
+
+1. Abra o ficheiro [`supabase/producao/instalar-base-de-dados.sql`](../supabase/producao/instalar-base-de-dados.sql)
+   no GitHub e carregue em **Raw** (mostra só o texto).
+2. Seleccione **todo** o texto e copie-o.
+3. Supabase → **SQL Editor** → **New query** → cole → **Run**.
+4. O resultado final deve mostrar `migracoes = 10` e `tarefa_diaria = 1`.
+
+O ficheiro corre numa única transacção (ou aplica tudo, ou nada) e recusa-se a correr se as
+tabelas já existirem. Regista as migrações no histórico, por isso futuros `db push` só aplicam as novas.
+Para migrações futuras sem terminal, cole no SQL Editor apenas o(s) ficheiro(s) novo(s) de
+`supabase/migrations/`.
+
+**Opção B — no computador, com terminal**
 
 ```bash
 npx supabase login

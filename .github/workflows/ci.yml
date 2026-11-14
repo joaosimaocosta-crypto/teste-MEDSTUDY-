@@ -28,6 +28,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Ficheiro de instalação pelo SQL Editor está actualizado
+        run: |
+          npm run db:install-sql
+          git diff --exit-code supabase/producao/instalar-base-de-dados.sql || { echo "Corra: npm run db:install-sql"; exit 1; }
+
       - name: Supabase local (migrações + seed)
         run: npx supabase start -x realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor,studio,postgres-meta
 

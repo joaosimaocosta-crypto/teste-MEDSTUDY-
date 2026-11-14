@@ -18,6 +18,7 @@
     "db:test": "supabase test db",
     "db:lint": "supabase db lint --level warning",
     "db:types": "supabase gen types typescript --local > .types.tmp && mv .types.tmp src/types/database.ts || (rm -f .types.tmp && exit 1)",
+    "db:install-sql": "node scripts/build-install-sql.mjs",
     "test:e2e": "node tests/e2e/run.cjs",
     "test:smoke": "node tests/smoke/check.cjs",
     "test:db": "supabase test db"
