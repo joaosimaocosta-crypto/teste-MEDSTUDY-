@@ -37,7 +37,7 @@ As migrações SQL estão em `supabase/migrations/` e são a fonte de verdade do
 | `…0700_quiz_catalog.sql` | Catálogo de testes (nº de perguntas, tentativas, melhor nota) |
 | `…0800_progress_tracking.sql` | Actividade diária (triggers), progresso por disciplina, estatísticas por pergunta |
 | `…0900_subscriptions_management.sql` | Definições (instruções de pagamento), gestão de assinaturas e pagamentos, expiração diária (pg_cron) |
-| `…1000_quiz_snapshot.sql` | Cópia fixa das perguntas em cada tentativa (histórico estável) |
+| `…1000_quiz_snapshot.sql` | Cópia fixa das perguntas em cada tentativa (histórico estável), índices em falta |
 
 ### Ambiente local (requer Docker)
 
@@ -175,7 +175,7 @@ Hierarquia: **Curso → Disciplina → Módulo → Capítulo → Aula → Recurs
 | Comando | O que verifica |
 |---|---|
 | `npm run lint` · `npm run typecheck` | Qualidade do código e tipos |
-| `npm run db:test` | 140+ testes pgTAP: RLS, funções seguras, regras de negócio e **auditoria automática** (RLS em todas as tabelas, `search_path` fixo, funções internas e permissões de `anon`) |
+| `npm run db:test` | ~140 testes pgTAP: RLS, funções seguras, regras de negócio e **auditoria automática** (RLS em todas as tabelas, `search_path` fixo, funções internas e permissões de `anon`) |
 | `npm run test:e2e` | ~300 verificações de ponta a ponta (Playwright) + acessibilidade (axe-core, WCAG 2.1 AA) em telemóvel e computador, tema claro e escuro |
 
 `npm run test:e2e` exige o Supabase **local** (`npm run db:start`) e `npm run build`. Recusa-se a correr
@@ -186,8 +186,9 @@ A integração contínua (`.github/workflows/ci.yml`) corre tudo isto em cada pu
 
 - Nunca fazer commit de `.env.local`. A chave `SUPABASE_SECRET_KEY` só existe no servidor
   (`src/lib/supabase/admin.ts`); o CI verifica que não aparece no código do browser.
-- RLS activo em todas as tabelas; estudantes nunca lêem respostas certas, a cópia das perguntas
-  nem o endereço dos PDFs (privilégios por coluna + funções seguras).
+- RLS activo em todas as tabelas; estudantes nunca lêem respostas certas (tabela `questions` e a
+  cópia em `quiz_attempt_snapshots`, sem acesso pela API) nem o endereço dos PDFs (privilégio por
+  coluna em `manuals.pdf_url`); tudo passa por funções seguras que verificam o acesso.
 - Cada página de administração usa `<AdminOnly>` e cada acção chama `requireAdmin()`/`requireUser()`.
 - Cabeçalhos HTTP (`next.config.ts`): CSP, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`,
   `Permissions-Policy`, `COOP` e HSTS (em https).
