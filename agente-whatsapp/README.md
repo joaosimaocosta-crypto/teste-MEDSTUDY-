@@ -39,7 +39,25 @@ npm start
 
 Abra <http://localhost:3000/admin>, entre com a senha e leia o QR code no celular (WhatsApp › **Aparelhos conectados** › **Conectar um aparelho**).
 
-## Publicar na Lunes Host (cPanel)
+## Publicar na Lunes Host (painel Pterodactyl: ctrl.lunes.host)
+
+Este é o caminho recomendado: o servidor fica ligado o tempo todo.
+
+1. **Startup**: em *Docker Image*, escolha Node.js **20 ou superior**. Em *MAIN FILE* (ou *JS file*), coloque `app.js`.
+2. **Files**: envie o `.zip` do projeto, clique nos três pontinhos › **Unarchive**. Os arquivos (`app.js`, `package.json`, `src/`, `public/`) devem ficar direto na pasta principal (`/home/container`).
+3. Ainda em **Files**, crie um arquivo chamado `.env` com:
+   ```
+   ANTHROPIC_API_KEY=sua-chave-da-anthropic
+   ADMIN_PASSWORD=uma-senha-forte
+   SESSION_SECRET=um-texto-aleatorio-longo
+   ```
+   A porta é definida automaticamente pela Lunes (variável `SERVER_PORT`).
+4. **Console** › **Start**. Na primeira vez, o servidor roda `npm install` (pode levar alguns minutos). Quando aparecer `[servidor] ouvindo na porta ...`, está pronto.
+5. Abra `http://ENDERECO:PORTA/admin` (o *Address* mostrado no Console, ex.: `http://node53.lunes.host:3106/admin`), entre com a senha e leia o QR code.
+
+> O endereço da Lunes usa **http** (sem cadeado). Use uma senha que você não usa em outros lugares. Para ter HTTPS e um domínio próprio, aponte um domínio com proxy (ex.: Cloudflare) para esse endereço.
+
+## Publicar em hospedagem cPanel (alternativa)
 
 O agente precisa de um **processo Node.js sempre ligado** (a conexão com o WhatsApp é permanente). Na hospedagem cPanel isso é feito pela ferramenta **"Setup Node.js App"**. Antes de contratar, ou se você não encontrar essa ferramenta, **confirme com o suporte da Lunes que o seu plano permite aplicações Node.js 20+ rodando de forma contínua**. Se não permitir, use o plano de hospedagem de aplicações/bots ou uma VPS da Lunes: o código é o mesmo, basta rodar `npm install` e `npm start`.
 

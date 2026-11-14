@@ -172,8 +172,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Erro interno.' });
 });
 
-const port = Number(process.env.PORT) || 3000;
-app.listen(port, () => console.log(`[servidor] ouvindo na porta ${port}`));
+// Pterodactyl (Lunes) define SERVER_PORT; cPanel/outros usam PORT.
+const port = Number(process.env.SERVER_PORT || process.env.PORT) || 3000;
+app.listen(port, '0.0.0.0', () => console.log(`[servidor] ouvindo na porta ${port}`));
 
 wa.startWhatsApp();
 
