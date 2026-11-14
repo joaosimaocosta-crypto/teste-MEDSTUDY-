@@ -151,6 +151,9 @@ const SUBJECT = '20000000-0000-0000-0000-000000000001';
   ok('Admin vê estatísticas (2 tentativas, 50% aprovados)', await waitText(a, '2 tentativas') && await a.isVisible(V('text=50% aprovados')));
   await a.click(V('button:has-text("Eliminar teste")')); await a.click(V('button:has-text("Eliminar definitivamente")'));
   ok('Não elimina teste com tentativas', await waitText(a, 'Para não apagar o histórico'));
+  await a.goto(`${BASE}/admin/testes`);
+  ok('Lista de testes (admin) mostra o nº de tentativas', await waitText(a, `Avaliação Cardio ${t}`) &&
+    (await a.locator(V(`li:has-text("Avaliação Cardio ${t}")`)).textContent()).includes('2 tentativas'));
   await ac.close();
 
   ok('Sem erros de JavaScript no browser', errors.length === 0, errors.join(' | ').slice(0, 400));

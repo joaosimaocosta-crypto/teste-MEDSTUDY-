@@ -233,6 +233,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"quiz_attempt_snapshots": {
+                  Row: {
+                    "attempt_id": string,"created_at": string,"questions": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "attempt_id": string,"created_at"?: string,"questions": NonNullable<Json>
+                  }
+                  Update: {
+                    "attempt_id"?: string,"created_at"?: string,"questions"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quiz_attempt_snapshots_attempt_id_fkey"
+      columns: ["attempt_id"]
+isOneToOne: true
+      referencedRelation: "quiz_attempts"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"quiz_attempts": {
                   Row: {
                     "answers": NonNullable<Json>,"created_at": string,"expires_at": string | null,"id": string,"max_score": number,"passed": boolean,"percentage": number,"quiz_id": string,"score": number,"started_at": string,"status": Database["public"]['Enums']["quiz_attempt_status"],"submitted_at": string | null,"user_id": string
@@ -455,6 +475,11 @@ isOneToOne: false
           Functions: {
             "_assert_admin":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"_attempt_questions":
+{ Args: { "p_attempt_id": string }; Returns: {
+              "correct_option": string,"created_at": string,"explanation": string,"id": string,"option_a": string,"option_b": string,"option_c": string,"option_d": string,"points": number,"position": number,"statement": string
+            }[]
                            },
 "_current_paid_until":
 { Args: { "p_exclude": string,"p_user_id": string }; Returns: string

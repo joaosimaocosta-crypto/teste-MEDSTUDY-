@@ -1,22 +1,25 @@
 -- =============================================================================
 -- MEDSTUDY MOZ — Migração 10: cópia fixa das perguntas em cada tentativa
--- (ADICIONA uma coluna e actualiza funções; tentativas antigas continuam a usar
+-- (ADICIONA uma tabela e actualiza funções; tentativas antigas continuam a usar
 --  as perguntas actuais, como antes)
 --
 -- Ao iniciar um teste, as perguntas (incluindo a resposta certa) são copiadas para
--- a tentativa. A correcção e a revisão usam essa cópia: se o administrador editar
--- uma pergunta mais tarde, o histórico do estudante não muda.
--- A coluna NUNCA é legível pelos estudantes (contém as respostas certas).
+-- quiz_attempt_snapshots. A correcção e a revisão usam essa cópia: se o administrador
+-- editar uma pergunta mais tarde, o histórico do estudante não muda.
+-- A cópia NUNCA é acessível pela API (contém as respostas certas).
 -- =============================================================================
 
-alter table public.quiz_attempts add column questions_snapshot jsonb;
+-- Tabela própria (e não uma coluna em quiz_attempts): assim quiz_attempts mantém
+-- permissões normais e a cópia fica totalmente inacessível pela API (sem políticas).
+create table public.quiz_attempt_snapshots (
+  attempt_id  uuid primary key references public.quiz_attempts (id) on delete cascade,
+  questions   jsonb not null,
+  created_at  timestamptz not null default now()
+);
 
--- Privilégios por coluna: estudantes lêem tudo excepto a cópia das perguntas.
-revoke select on public.quiz_attempts from authenticated;
-grant select (
-  id, quiz_id, user_id, status, started_at, expires_at, submitted_at,
-  answers, score, max_score, percentage, passed, created_at
-) on public.quiz_attempts to authenticated;
+alter table public.quiz_attempt_snapshots enable row level security;
+-- Sem políticas: ninguém lê nem escreve pela API. Só as funções SECURITY DEFINER.
+revoke all on public.quiz_attempt_snapshots from anon, authenticated;
 
 -- -----------------------------------------------------------------------------
 -- Perguntas efectivas de uma tentativa: a cópia, ou (tentativas antigas) as actuais
@@ -33,18 +36,20 @@ set search_path = ''
 as $$
   select s.id, s.statement, s.option_a, s.option_b, s.option_c, s.option_d,
          s.correct_option, s.explanation, s.points, s.position, s.created_at
-  from public.quiz_attempts a
-  cross join lateral jsonb_to_recordset(a.questions_snapshot) as s(
+  from public.quiz_attempt_snapshots snap
+  cross join lateral jsonb_to_recordset(snap.questions) as s(
     id uuid, statement text, option_a text, option_b text, option_c text, option_d text,
     correct_option text, explanation text, points integer, "position" integer, created_at timestamptz
   )
-  where a.id = p_attempt_id and a.questions_snapshot is not null
+  where snap.attempt_id = p_attempt_id
   union all
+  -- tentativas anteriores a esta migração: perguntas actuais (como antes)
   select q.id, q.statement, q.option_a, q.option_b, q.option_c, q.option_d,
          q.correct_option::text, q.explanation, q.points, q.position, q.created_at
   from public.quiz_attempts a
   join public.questions q on q.quiz_id = a.quiz_id
-  where a.id = p_attempt_id and a.questions_snapshot is null;
+  where a.id = p_attempt_id
+    and not exists (select 1 from public.quiz_attempt_snapshots x where x.attempt_id = a.id);
 $$;
 
 revoke execute on function public._attempt_questions(uuid) from public, anon, authenticated;
@@ -93,7 +98,6 @@ begin
 
   if v_attempt.id is not null then
     if v_attempt.expires_at is null or v_attempt.expires_at > now() then
-      v_attempt.questions_snapshot := null;  -- nunca devolver as respostas certas
       return v_attempt;
     end if;
     perform public._grade_attempt(v_attempt.id, '{}'::jsonb, 'expired');
@@ -106,24 +110,24 @@ begin
     end if;
   end if;
 
-  insert into public.quiz_attempts (quiz_id, user_id, expires_at, questions_snapshot)
+  insert into public.quiz_attempts (quiz_id, user_id, expires_at)
   values (
     v_quiz.id,
     v_uid,
     case when v_quiz.time_limit_minutes is not null
-         then now() + make_interval(mins => v_quiz.time_limit_minutes) end,
-    (select jsonb_agg(jsonb_build_object(
-        'id', q.id, 'statement', q.statement,
-        'option_a', q.option_a, 'option_b', q.option_b, 'option_c', q.option_c, 'option_d', q.option_d,
-        'correct_option', q.correct_option, 'explanation', q.explanation,
-        'points', q.points, 'position', q.position, 'created_at', q.created_at
-      ) order by q.position, q.created_at)
-     from public.questions q where q.quiz_id = v_quiz.id)
+         then now() + make_interval(mins => v_quiz.time_limit_minutes) end
   )
   returning * into v_attempt;
 
-  -- A função é chamável pela API: nunca devolver a cópia (contém as respostas certas).
-  v_attempt.questions_snapshot := null;
+  insert into public.quiz_attempt_snapshots (attempt_id, questions)
+  select v_attempt.id, jsonb_agg(jsonb_build_object(
+      'id', q.id, 'statement', q.statement,
+      'option_a', q.option_a, 'option_b', q.option_b, 'option_c', q.option_c, 'option_d', q.option_d,
+      'correct_option', q.correct_option, 'explanation', q.explanation,
+      'points', q.points, 'position', q.position, 'created_at', q.created_at
+    ) order by q.position, q.created_at)
+  from public.questions q where q.quiz_id = v_quiz.id;
+
   return v_attempt;
 end;
 $$;
@@ -292,7 +296,7 @@ end;
 $$;
 
 -- -----------------------------------------------------------------------------
--- submit_quiz_attempt: igual ao anterior, sem devolver a cópia
+-- submit_quiz_attempt: igual ao anterior (corrige com a cópia, via _grade_attempt)
 -- -----------------------------------------------------------------------------
 create or replace function public.submit_quiz_attempt(p_attempt_id uuid, p_answers jsonb)
 returns public.quiz_attempts
@@ -323,7 +327,6 @@ begin
   else
     v_attempt := public._grade_attempt(v_attempt.id, p_answers, 'submitted');
   end if;
-  v_attempt.questions_snapshot := null;
   return v_attempt;
 end;
 $$;
